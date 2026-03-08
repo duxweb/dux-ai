@@ -160,7 +160,7 @@ class InstallService
         );
     }
 
-    public function runComposerUpdate(OutputInterface $output): void
+    public function runComposerInstall(OutputInterface $output): void
     {
         try {
             $phpBinary = RuntimeService::phpBinary();
@@ -171,7 +171,16 @@ class InstallService
         $output->writeln('[env] php cli: ' . $phpBinary);
         $output->writeln('[env] composer: ' . $composerScript);
 
-        $process = new Process([$phpBinary, $composerScript, 'update', '--no-interaction', '--no-progress'], base_path());
+        $output->writeln('[env] composer args: install --no-interaction --no-progress --ignore-platform-req=ext-*');
+
+        $process = new Process([
+            $phpBinary,
+            $composerScript,
+            'install',
+            '--no-interaction',
+            '--no-progress',
+            '--ignore-platform-req=ext-*',
+        ], base_path());
         $process->setTimeout(ConfigService::getCommandTimeout());
         $process->run(function ($type, $buffer) use ($output): void {
             $output->write($buffer);
