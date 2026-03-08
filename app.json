@@ -5,6 +5,7 @@
         "duxweb/data": "0.1.1",
         "duxweb/system": "0.2.1",
         "duxweb/install": "0.0.4",
-        "duxweb/boot": "0.0.1"
+        "duxweb/boot": "0.0.1",
+        "duxweb/ai": "0.1.1"
     }
 }
