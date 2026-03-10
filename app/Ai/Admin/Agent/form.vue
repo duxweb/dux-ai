@@ -33,12 +33,29 @@ interface BotOption {
   }
 }
 
+interface SkillOption {
+  label: string
+  value: string
+  name?: string
+  title?: string
+  description?: string
+  compatibility?: string
+  compatibility_name?: string
+  source_type?: string
+  source_type_name?: string
+  disable_model_invocation?: boolean
+  user_invocable?: boolean
+}
+
 const toolRegistry = ref<Record<string, any>>({})
 const botOptions = ref<BotOption[]>([])
 const botLoading = ref(false)
+const skillOptions = ref<SkillOption[]>([])
+const skillLoading = ref(false)
 
 const defaultToolStyle = { icon: 'i-tabler:puzzle', color: 'primary', iconClass: 'text-primary', bgClass: 'bg-primary/10' }
 const defaultBotStyle = { icon: 'i-tabler:robot', iconClass: 'text-primary', bgClass: 'bg-primary/10', label: '机器人' }
+const defaultSkillStyle = { icon: 'i-tabler:bulb', iconClass: 'text-warning', bgClass: 'bg-warning/10', label: '技能' }
 
 function normalizeIconBgClass(value: unknown, fallback: string): string {
   const text = String(value || '').trim()
@@ -95,6 +112,7 @@ const model = ref<Record<string, any>>({
     summary_messages_keep: 5,
     debug_enabled: false,
     bot_codes: undefined,
+    skill_codes: undefined,
   },
   active: true,
   description: undefined,
@@ -131,13 +149,32 @@ function normalizeBotCodes(value: unknown): string[] {
   return [...new Set(list)]
 }
 
+function normalizeSkillCodes(value: unknown): string[] {
+  if (!Array.isArray(value)) {
+    return []
+  }
+  const list = value
+    .map(item => String(item || '').trim())
+    .filter(item => item !== '')
+  return [...new Set(list)]
+}
+
 function getCurrentBotCodes(): string[] {
   return normalizeBotCodes(model.value?.settings?.bot_codes)
+}
+
+function getCurrentSkillCodes(): string[] {
+  return normalizeSkillCodes(model.value?.settings?.skill_codes)
 }
 
 function setCurrentBotCodes(codes: string[]) {
   ensureSettingsContainer()
   model.value.settings.bot_codes = codes.length ? [...new Set(codes)] : undefined
+}
+
+function setCurrentSkillCodes(codes: string[]) {
+  ensureSettingsContainer()
+  model.value.settings.skill_codes = codes.length ? [...new Set(codes)] : undefined
 }
 
 async function loadBotOptions() {
@@ -170,6 +207,35 @@ async function loadBotOptions() {
   }
 }
 
+async function loadSkillOptions() {
+  skillLoading.value = true
+  try {
+    const res = await request.mutateAsync({
+      path: 'ai/skill/options',
+      method: 'GET',
+    })
+    const list = Array.isArray(res.data) ? res.data : []
+    skillOptions.value = list
+      .map((item: any) => ({
+        label: String(item?.label || item?.title || item?.value || ''),
+        value: String(item?.value || item?.name || ''),
+        name: String(item?.name || ''),
+        title: String(item?.title || ''),
+        description: String(item?.description || ''),
+        compatibility: String(item?.compatibility || ''),
+        compatibility_name: String(item?.compatibility_name || ''),
+        source_type: String(item?.source_type || ''),
+        source_type_name: String(item?.source_type_name || ''),
+        disable_model_invocation: Boolean(item?.disable_model_invocation),
+        user_invocable: item?.user_invocable === undefined ? true : Boolean(item?.user_invocable),
+      }))
+      .filter(item => item.value !== '')
+  }
+  finally {
+    skillLoading.value = false
+  }
+}
+
 const botOptionsMap = computed(() => {
   return botOptions.value.reduce((acc: Record<string, BotOption>, item) => {
     acc[item.value] = item
@@ -199,12 +265,70 @@ const selectedBots = computed<BotOption[]>(() => {
   })
 })
 
+const skillOptionsMap = computed(() => {
+  return skillOptions.value.reduce((acc: Record<string, SkillOption>, item) => {
+    acc[item.value] = item
+    return acc
+  }, {})
+})
+
+const selectedSkills = computed<SkillOption[]>(() => {
+  return getCurrentSkillCodes().map((code) => {
+    const item = skillOptionsMap.value[code]
+    if (item) {
+      return item
+    }
+    return {
+      label: code,
+      value: code,
+      name: code,
+      title: code,
+      description: '已绑定技能',
+      compatibility: '',
+      compatibility_name: '',
+      source_type: '',
+      source_type_name: '',
+      disable_model_invocation: false,
+      user_invocable: true,
+    }
+  })
+})
+
 function resolveBotMeta(bot: BotOption) {
   return {
     icon: String(bot.icon || '').trim() || defaultBotStyle.icon,
     iconClass: String(bot.style?.iconClass || '').trim() || defaultBotStyle.iconClass,
     bgClass: normalizeIconBgClass(bot.style?.iconBgClass || '', defaultBotStyle.bgClass),
     label: String(bot.platform_name || bot.platform || '').trim() || defaultBotStyle.label,
+  }
+}
+
+function resolveSkillMeta(skill: SkillOption) {
+  const compatibility = String(skill.compatibility || '').trim()
+  if (compatibility === 'full') {
+    return {
+      icon: 'i-tabler:bulb',
+      iconClass: 'text-success',
+      bgClass: 'bg-success/10',
+      label: skill.source_type_name || defaultSkillStyle.label,
+      tagType: 'success' as const,
+    }
+  }
+  if (compatibility === 'partial') {
+    return {
+      icon: 'i-tabler:bulb',
+      iconClass: 'text-warning',
+      bgClass: 'bg-warning/10',
+      label: skill.source_type_name || defaultSkillStyle.label,
+      tagType: 'warning' as const,
+    }
+  }
+  return {
+    icon: defaultSkillStyle.icon,
+    iconClass: defaultSkillStyle.iconClass,
+    bgClass: defaultSkillStyle.bgClass,
+    label: skill.source_type_name || defaultSkillStyle.label,
+    tagType: 'default' as const,
   }
 }
 
@@ -230,12 +354,42 @@ async function openBotSelectModal() {
   }
 }
 
+async function openSkillSelectModal() {
+  if (!skillOptions.value.length) {
+    await loadSkillOptions()
+  }
+  try {
+    const result = await modal.show({
+      title: '选择技能',
+      width: 820,
+      component: () => import('./components/SkillSelectModal.vue'),
+      componentProps: {
+        selectedCodes: getCurrentSkillCodes(),
+      },
+    })
+    if (Array.isArray(result)) {
+      setCurrentSkillCodes(normalizeSkillCodes(result))
+    }
+  }
+  catch {
+    // ignore
+  }
+}
+
 function removeBot(code: string) {
   setCurrentBotCodes(getCurrentBotCodes().filter(item => item !== code))
 }
 
 function clearBots() {
   setCurrentBotCodes([])
+}
+
+function removeSkill(code: string) {
+  setCurrentSkillCodes(getCurrentSkillCodes().filter(item => item !== code))
+}
+
+function clearSkills() {
+  setCurrentSkillCodes([])
 }
 
 function normalizeToolForEdit(item: any) {
@@ -301,6 +455,7 @@ onMounted(async () => {
   await Promise.allSettled([
     loadToolRegistry(),
     loadBotOptions(),
+    loadSkillOptions(),
   ])
 })
 </script>
@@ -360,6 +515,71 @@ onMounted(async () => {
       </DuxFormLayout>
     </NTabPane>
 
+    <NTabPane name="skill" label="技能配置">
+      <div class="pb-4 max-w-4xl mx-auto">
+        <div class="flex items-center justify-between py-4">
+          <div>
+            <div class="text-base font-medium">技能绑定</div>
+            <div class="text-sm text-muted mt-1">绑定多个技能，运行时会把技能说明注入到智能体提示词</div>
+          </div>
+          <div class="flex items-center gap-2">
+            <NButton secondary type="primary" :loading="skillLoading" @click="openSkillSelectModal">
+              <template #icon>
+                <i class="i-tabler:plus" />
+              </template>
+              添加
+            </NButton>
+            <NButton v-if="selectedSkills.length" tertiary @click="clearSkills">
+              清空
+            </NButton>
+          </div>
+        </div>
+
+        <div
+          v-if="!selectedSkills.length"
+          class="border border-dashed border-muted rounded-lg py-12 text-center"
+        >
+          <i class="i-tabler:bulb text-3xl text-muted" />
+          <div class="text-sm text-muted mt-3 mb-2">暂未绑定技能</div>
+          <NButton type="primary" ghost @click="openSkillSelectModal">
+            添加技能
+          </NButton>
+        </div>
+
+        <div v-else class="border border-muted rounded-lg overflow-hidden">
+          <div
+            v-for="(skill, idx) in selectedSkills"
+            :key="skill.value"
+            class="flex items-center gap-4 p-4 hover:bg-fill transition-colors"
+            :class="{ 'border-t border-muted': idx > 0 }"
+          >
+            <div class="size-12 rounded-lg flex items-center justify-center flex-shrink-0" :class="resolveSkillMeta(skill).bgClass">
+              <div class="size-6" :class="[resolveSkillMeta(skill).icon, resolveSkillMeta(skill).iconClass]" />
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2">
+                <span class="text-base font-medium truncate">{{ skill.label || skill.title || skill.value }}</span>
+              </div>
+              <div class="text-sm text-muted mt-0.5 line-clamp-1">{{ skill.description || '已绑定技能' }}</div>
+            </div>
+            <div class="flex items-center gap-2">
+              <NTag :type="resolveSkillMeta(skill).tagType" round>
+                {{ skill.compatibility_name || '未知兼容' }}
+              </NTag>
+              <NTag type="default" round>
+                {{ resolveSkillMeta(skill).label }}
+              </NTag>
+            </div>
+            <NButton quaternary circle @click="removeSkill(skill.value)">
+              <template #icon>
+                <i class="i-tabler:x" />
+              </template>
+            </NButton>
+          </div>
+        </div>
+      </div>
+    </NTabPane>
+
     <NTabPane name="channel" label="渠道绑定">
       <div class="pb-4 max-w-4xl mx-auto">
         <!-- 头部 -->
@@ -386,8 +606,8 @@ onMounted(async () => {
           class="border border-dashed border-muted rounded-lg py-12 text-center"
         >
           <i class="i-tabler:message-chatbot text-3xl text-muted" />
-          <div class="text-sm text-muted mt-3">暂未绑定机器人</div>
-          <NButton class="mt-4" type="primary" size="small" ghost @click="openBotSelectModal">
+          <div class="text-sm text-muted mt-3 mb-2">暂未绑定机器人</div>
+          <NButton type="primary" ghost @click="openBotSelectModal">
             添加机器人
           </NButton>
         </div>
@@ -444,8 +664,8 @@ onMounted(async () => {
           class="border border-dashed border-muted rounded-lg py-12 text-center"
         >
           <i class="i-tabler:puzzle text-3xl text-muted" />
-          <div class="text-sm text-muted mt-3">暂未绑定能力</div>
-          <NButton class="mt-4" type="primary" size="small" ghost @click="openCreateTool">
+          <div class="text-sm text-muted mt-3 mb-2">暂未绑定能力</div>
+          <NButton type="primary" ghost @click="openCreateTool">
             添加能力
           </NButton>
         </div>

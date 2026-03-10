@@ -7,6 +7,7 @@ namespace App\Ai\Service\Agent;
 use App\Ai\Service\Neuron\Agent\ChatOrchestrator as NeuronChatOrchestrator;
 use App\Ai\Service\Neuron\Agent\ToolFactory as NeuronToolFactory;
 use App\Ai\Service\Neuron\History\DbChatHistoryAdapter;
+use App\Ai\Service\Skill\PromptBuilder as SkillPromptBuilder;
 use App\Ai\Models\AiAgentMessage;
 use App\Ai\Service\AI;
 use App\Ai\Models\AiModel;
@@ -98,6 +99,10 @@ final class Service
         $instructions = trim((string)($agent->instructions ?? ''));
         if ($instructions === '') {
             $instructions = '你是一个有帮助、可靠的 AI 助手。';
+        }
+        $skillInstructions = SkillPromptBuilder::buildForAgent($agent);
+        if ($skillInstructions !== '') {
+            $instructions = trim($instructions . "\n\n" . $skillInstructions);
         }
         $instructions = trim($instructions . "\n\n工具结果回复规则：当本轮刚收到工具结果时，请仅输出自然语言说明，不要输出 JSON、代码块或结构化对象。图片/视频等多媒体结构由系统侧统一封装。");
 

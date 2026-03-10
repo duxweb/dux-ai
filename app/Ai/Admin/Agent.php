@@ -8,6 +8,7 @@ use App\Ai\Models\AiAgent;
 use App\Ai\Models\AiAgentSession;
 use App\Ai\Models\AiFlow;
 use App\Ai\Models\AiModel;
+use App\Ai\Service\Skill\PromptBuilder as SkillPromptBuilder;
 use App\Ai\Service\Agent as AgentService;
 use App\Ai\Service\Agent\Sse as AgentSse;
 use App\Ai\Service\Agent\SseGeneratorStream;
@@ -96,6 +97,7 @@ class Agent extends Resources
             }
         }
         $settings['bot_codes'] = array_values(array_unique($botCodes));
+        $settings['skill_codes'] = SkillPromptBuilder::normalizeSkillCodes($settings['skill_codes'] ?? []);
         $this->assertBotBindingsUnique((int)($args['id'] ?? 0), $settings['bot_codes']);
 
         return [
