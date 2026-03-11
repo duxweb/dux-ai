@@ -33,7 +33,6 @@
         "thiagoalessio/tesseract_ocr": "^2.13",
         "spatie/pdf-to-image": "^3.2",
         "php-ffmpeg/php-ffmpeg": "^1.4",
-        "symfony/redis-messenger": "^8.0",
         "duxweb/dux-lite-runtime": "^0.0.4"
     },
     "require-dev": {
