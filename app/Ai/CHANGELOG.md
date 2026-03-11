@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 
 
+
+## [0.2.0] - 2026-03-11
+
+- 增加ski，优化异常错误转发
+
 ## [0.1.3] - 2026-03-10
 
 - 移除无用依赖
