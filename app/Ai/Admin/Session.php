@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Ai\Admin;
 
 use App\Ai\Models\AiAgentSession;
+use App\AiDesktop\Models\AiNodeSessionBinding;
 use Core\Resources\Action\Resources;
 use Core\Resources\Attribute\Resource;
 use Illuminate\Database\Eloquent\Builder;
@@ -21,6 +22,7 @@ class Session extends Resources
             'keyword' => null,
             'user_type' => null,
             'user_id' => null,
+            'device_id' => null,
         ];
 
         if ($params['keyword']) {
@@ -41,6 +43,17 @@ class Session extends Resources
 
         if (!empty($params['user_id']) && is_numeric((string)$params['user_id'])) {
             $query->where('user_id', (int)$params['user_id']);
+        }
+
+        if (!empty($params['device_id']) && is_numeric((string)$params['device_id'])) {
+            $deviceId = (int)$params['device_id'];
+            $table = (new AiNodeSessionBinding())->getTable();
+            $query->whereExists(function ($builder) use ($deviceId, $table) {
+                $builder->selectRaw('1')
+                    ->from($table)
+                    ->whereColumn($table . '.session_id', 'ai_agent_sessions.id')
+                    ->where($table . '.node_id', $deviceId);
+            });
         }
 
         $query->with(['agent']);

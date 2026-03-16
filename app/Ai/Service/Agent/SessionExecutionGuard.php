@@ -9,7 +9,7 @@ use Symfony\Component\Lock\LockInterface;
 
 final class SessionExecutionGuard
 {
-    private const LOCK_TTL = 180;
+    private const LOCK_TTL = 60;
 
     public static function acquire(int $sessionId): ?LockInterface
     {
@@ -29,6 +29,13 @@ final class SessionExecutionGuard
     {
         if ($lock) {
             $lock->release();
+        }
+    }
+
+    public static function refresh(?LockInterface $lock): void
+    {
+        if ($lock) {
+            $lock->refresh(self::LOCK_TTL);
         }
     }
 

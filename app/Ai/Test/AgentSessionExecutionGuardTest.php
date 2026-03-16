@@ -13,3 +13,18 @@ it('SessionExecutionGuard：同一会话不可重复获取锁', function () {
     expect($second)->not->toBeNull();
     SessionExecutionGuard::release($second);
 });
+
+it('SessionExecutionGuard：refresh 后仍保持锁占用，释放后可再次获取', function () {
+    $lock = SessionExecutionGuard::acquire(9528);
+    expect($lock)->not->toBeNull();
+
+    SessionExecutionGuard::refresh($lock);
+
+    expect(SessionExecutionGuard::acquire(9528))->toBeNull();
+
+    SessionExecutionGuard::release($lock);
+
+    $next = SessionExecutionGuard::acquire(9528);
+    expect($next)->not->toBeNull();
+    SessionExecutionGuard::release($next);
+});

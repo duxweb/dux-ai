@@ -49,6 +49,8 @@ export function mapOpenAiUiMessage(message) {
   }
 
   if (message?.meta && typeof message.meta === 'object') {
+    if (message?.role === 'assistant' && message.meta.approval && typeof message.meta.approval === 'object')
+      meta.approval = message.meta.approval
     if (Array.isArray(message.meta.card))
       meta.card = message.meta.card
     if (Array.isArray(message.meta.images))

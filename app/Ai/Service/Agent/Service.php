@@ -208,7 +208,8 @@ final class Service
                     'exclude_tools' => $excludeTools,
                     'initial_tool_result' => $initialToolResult,
                 ]
-            )
+            ),
+            false
         );
 
         foreach ($generator as $_chunk) {
@@ -436,17 +437,22 @@ final class Service
      * @param callable():Generator $runner
      * @return Generator<int, string>
      */
-    private static function guardedStreamChat(int $sessionId, callable $runner): Generator
+    private static function guardedStreamChat(int $sessionId, callable $runner, bool $lockSession = true): Generator
     {
-        return (function () use ($sessionId, $runner) {
-            $lock = self::acquireSessionLock($sessionId);
+        return (function () use ($sessionId, $runner, $lockSession) {
+            $lock = $lockSession ? self::acquireSessionLock($sessionId) : null;
             try {
                 $generator = $runner();
                 foreach ($generator as $chunk) {
+                    if ($lockSession) {
+                        SessionExecutionGuard::refresh($lock);
+                    }
                     yield $chunk;
                 }
             } finally {
-                SessionExecutionGuard::release($lock);
+                if ($lockSession) {
+                    SessionExecutionGuard::release($lock);
+                }
             }
         })();
     }

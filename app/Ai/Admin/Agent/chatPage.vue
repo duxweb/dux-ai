@@ -81,6 +81,7 @@ const loadingSessions = ref(false)
 const messagesLoading = ref(false)
 const chatBodyRef = ref<HTMLDivElement | null>(null)
 const scrollPending = ref(false)
+const stickToBottom = ref(true)
 const uploading = ref(false)
 const imageInputRef = ref<HTMLInputElement | null>(null)
 const fileInputRef = ref<HTMLInputElement | null>(null)
@@ -89,33 +90,11 @@ const pendingFiles = ref<{ url: string, filename?: string, content?: string, mod
 const showMobileSidebar = ref(false)
 const streamStatus = ref<StreamStatus | null>(null)
 const sessionNotice = ref('')
+const messagePollTimer = ref<number | null>(null)
 const SESSION_BUSY_MESSAGE = '当前会话正在处理中，请等待本轮完成后再发送'
-
-const streamStatusTone = computed(() => {
-  const code = streamStatus.value?.code || ''
-  if (code === 'queued' || code === 'retry_wait')
-    return 'warning'
-  if (code === 'tool_call' || code === 'tool_result')
-    return 'info'
-  return 'primary'
-})
-
-const streamStatusText = computed(() => {
-  const status = streamStatus.value
-  if (!status)
-    return ''
-  const meta = status.meta || {}
-  if (status.code === 'queued' && meta.waited_ms) {
-    return `${status.label} · 已等待 ${Math.ceil(Number(meta.waited_ms) / 1000)}s`
-  }
-  if (status.code === 'retry_wait' && meta.delay_ms) {
-    return `${status.label} · ${Math.ceil(Number(meta.delay_ms) / 1000)}s 后继续`
-  }
-  if ((status.code === 'tool_call' || status.code === 'tool_result') && meta.tool) {
-    return `${status.label} · ${String(meta.tool)}`
-  }
-  return status.label
-})
+const MESSAGE_POLL_INTERVAL = 3000
+const MESSAGE_FULL_SYNC_EVERY = 4
+const messagePollCount = ref(0)
 
 function headers() {
   const h: Record<string, string> = {
@@ -244,15 +223,7 @@ async function handleCardAction(button: any) {
       return
     }
 
-    try {
-      inputText.value = text
-      await sendMessage()
-      await loadMessages(activeSessionId.value)
-      scrollToBottom()
-    }
-    catch (err: any) {
-      message.error(err?.message || '审批操作失败')
-    }
+    await handleApprovalReply(text)
     return
   }
 
@@ -315,9 +286,23 @@ function scrollToBottom() {
   })
 }
 
+function updateScrollAnchor() {
+  const el = chatBodyRef.value
+  if (!el)
+    return
+  const threshold = 80
+  const distance = el.scrollHeight - el.scrollTop - el.clientHeight
+  stickToBottom.value = distance <= threshold
+}
+
+function scrollToBottomIfNeeded(force = false) {
+  if (force || stickToBottom.value)
+    scrollToBottom()
+}
+
 function appendMessage(msg: ChatMessage) {
   chatHistory.value.push(msg)
-  scrollToBottom()
+  scrollToBottomIfNeeded()
 }
 
 function createLocalMessageId(prefix: string) {
@@ -329,6 +314,8 @@ function hasVisibleMessageContent(msg?: ChatMessage | null) {
     return false
   const text = String(msg.content || '').trim()
   if (text)
+    return true
+  if (msg.meta?.approval && typeof msg.meta.approval === 'object')
     return true
   if (Array.isArray(msg.meta?.images) && msg.meta.images.length)
     return true
@@ -345,6 +332,103 @@ function isPendingAssistant(msg?: ChatMessage | null) {
   if (!msg || msg.role !== 'assistant')
     return false
   return Boolean(msg.meta?.pending) && !hasVisibleMessageContent(msg)
+}
+
+function approvalStatusText(status?: string) {
+  switch (String(status || '').trim()) {
+    case 'approved':
+      return '已同意'
+    case 'rejected':
+      return '已拒绝'
+    case 'expired':
+      return '已过期'
+    case 'canceled':
+      return '已取消'
+    default:
+      return '待审批'
+  }
+}
+
+function approvalStatusType(status?: string) {
+  switch (String(status || '').trim()) {
+    case 'approved':
+      return 'success'
+    case 'rejected':
+      return 'error'
+    case 'expired':
+    case 'canceled':
+      return 'warning'
+    default:
+      return 'info'
+  }
+}
+
+const streamStatusTone = computed(() => {
+  const code = streamStatus.value?.code || ''
+  if (code === 'queued' || code === 'retry_wait')
+    return 'warning'
+  if (code === 'tool_call' || code === 'tool_result')
+    return 'info'
+  return 'primary'
+})
+
+const streamStatusText = computed(() => {
+  const status = streamStatus.value
+  if (!status)
+    return ''
+  const meta = status.meta || {}
+  if (status.code === 'queued' && meta.waited_ms) {
+    return `${status.label} · 已等待 ${Math.ceil(Number(meta.waited_ms) / 1000)}s`
+  }
+  if (status.code === 'retry_wait' && meta.delay_ms) {
+    return `${status.label} · ${Math.ceil(Number(meta.delay_ms) / 1000)}s 后继续`
+  }
+  if ((status.code === 'tool_call' || status.code === 'tool_result') && meta.tool) {
+    return `${status.label} · ${String(meta.tool)}`
+  }
+  return status.label
+})
+
+function approvalRows(msg: ChatMessage) {
+  const approval = msg.meta?.approval || {}
+  const request = approval.request && typeof approval.request === 'object' ? approval.request : {}
+  const actions = Array.isArray(request.actions) ? request.actions : []
+  const parsed = actions[0]?.parsed && typeof actions[0].parsed === 'object' ? actions[0].parsed : {}
+  const payload = parsed.payload && typeof parsed.payload === 'object' ? parsed.payload : {}
+  const rows = []
+
+  if (approval.summary)
+    rows.push({ name: '说明', value: String(approval.summary) })
+  if (approval.action_name || approval.tool_name)
+    rows.push({ name: '执行', value: String(approval.action_name || approval.tool_name) })
+  if (approval.risk_level)
+    rows.push({ name: '风险', value: String(approval.risk_level) })
+  if (approval.display_value)
+    rows.push({ name: '目标', value: String(approval.display_value) })
+  if (payload.command)
+    rows.push({ name: '命令', value: String(payload.command) })
+
+  return rows
+}
+
+function canReplyApproval(msg: ChatMessage) {
+  const status = String(msg.meta?.approval?.status || '')
+  return msg.role === 'assistant' && status === 'pending' && !sending.value
+}
+
+async function handleApprovalReply(text: string) {
+  if (!text.trim())
+    return
+
+  try {
+    inputText.value = text.trim()
+    await handleSend()
+    await loadMessages(activeSessionId.value, { silent: true })
+    scrollToBottom()
+  }
+  catch (err: any) {
+    message.error(err?.message || '审批操作失败')
+  }
 }
 
 function cleanupPendingAssistant(index: number | null) {
@@ -655,11 +739,13 @@ function removeSession(sessionId?: number | null) {
   }).catch(() => {})
 }
 
-async function loadMessages(sessionId: number | null) {
+async function loadMessages(sessionId: number | null, options: { silent?: boolean } = {}) {
   if (!sessionId)
     return
-  messagesLoading.value = true
-  chatHistory.value = []
+  if (!options.silent)
+    messagesLoading.value = true
+  if (!options.silent)
+    chatHistory.value = []
   try {
     const res = await requestClient.mutateAsync({
       path: `${apiBase}/sessions/${sessionId}/messages`,
@@ -670,14 +756,76 @@ async function loadMessages(sessionId: number | null) {
 
     // Keep the natural DB order (id ascending), but hide empty assistant messages that only contain tool_calls.
     chatHistory.value = mapped
-    scrollToBottom()
+    if (!options.silent)
+      scrollToBottomIfNeeded(true)
+    else if (mapped.length !== 0)
+      scrollToBottomIfNeeded()
   }
   catch (err: any) {
     message.error(err?.message || '加载消息失败')
   }
   finally {
-    messagesLoading.value = false
+    if (!options.silent)
+      messagesLoading.value = false
   }
+}
+
+function latestMessageId() {
+  return chatHistory.value.reduce((max, msg) => {
+    const id = Number(msg?.meta?.id || 0)
+    return Number.isFinite(id) && id > max ? id : max
+  }, 0)
+}
+
+async function pollMessages() {
+  if (!activeSessionId.value || sending.value || messagesLoading.value)
+    return
+
+  messagePollCount.value++
+  if (messagePollCount.value % MESSAGE_FULL_SYNC_EVERY === 0) {
+    await loadMessages(activeSessionId.value, { silent: true })
+    return
+  }
+
+  const afterId = latestMessageId()
+  if (afterId <= 0)
+    return
+
+  try {
+    const res = await requestClient.mutateAsync({
+      path: `${apiBase}/sessions/${activeSessionId.value}/messages`,
+      method: 'GET',
+      query: {
+        after_id: afterId,
+        limit: 200,
+      },
+    })
+    const list = Array.isArray(res?.data) ? res.data : (Array.isArray(res?.data?.data) ? res.data.data : [])
+    const mapped = mapOpenAiUiMessages(list, { filterToolCallPlaceholder: true }) as ChatMessage[]
+    if (!mapped.length)
+      return
+    chatHistory.value.push(...mapped)
+    scrollToBottomIfNeeded()
+  }
+  catch {
+  }
+}
+
+function stopMessagePolling() {
+  if (messagePollTimer.value) {
+    window.clearInterval(messagePollTimer.value)
+    messagePollTimer.value = null
+  }
+}
+
+function startMessagePolling() {
+  stopMessagePolling()
+  if (!activeSessionId.value)
+    return
+  messagePollCount.value = 0
+  messagePollTimer.value = window.setInterval(() => {
+    void pollMessages()
+  }, MESSAGE_POLL_INTERVAL)
 }
 
 function handleAbort() {
@@ -775,10 +923,7 @@ async function handleSend() {
   inputText.value = ''
   sending.value = true
   sessionNotice.value = ''
-  streamStatus.value = {
-    code: 'thinking',
-    label: '正在发送请求',
-  }
+  streamStatus.value = null
 
   const streamUrl = manage.getApiUrl(`${apiBase}/chat/completions`)
   const signalController = new AbortController()
@@ -1044,6 +1189,7 @@ function openAgentSelector() {
 
 onBeforeUnmount(() => {
   handleAbort()
+  stopMessagePolling()
 })
 
 watch(() => [props.code, routeAgentCode.value], ([propCode, queryCode]) => {
@@ -1082,9 +1228,11 @@ watch(activeSessionId, (val, prev) => {
     return
   if (prev !== null && prev !== undefined)
     handleAbort()
+  stopMessagePolling()
   sessionNotice.value = ''
   if (val) {
     loadMessages(val)
+    startMessagePolling()
     // 移动端选择会话后自动关闭侧边栏
     showMobileSidebar.value = false
   }
@@ -1270,11 +1418,11 @@ watch(activeSessionId, (val, prev) => {
                     <div class="text-sm md:text-base font-semibold truncate">
                       {{ sessions.find(s => s.id === activeSessionId)?.title || `会话 #${activeSessionId}` }}
                     </div>
-                    <div v-if="sending" class="flex items-center gap-1.5 px-2.5 py-1 rounded-full" :class="streamStatusTone === 'warning' ? 'bg-amber-500/10 text-amber-600' : streamStatusTone === 'info' ? 'bg-sky-500/10 text-sky-600' : 'bg-primary/10 text-primary'">
+                    <div v-if="sending && streamStatusText" class="flex items-center gap-1.5 px-2.5 py-1 rounded-full" :class="streamStatusTone === 'warning' ? 'bg-amber-500/10 text-amber-600' : streamStatusTone === 'info' ? 'bg-sky-500/10 text-sky-600' : 'bg-primary/10 text-primary'">
                       <span class="size-1.5 rounded-full bg-primary animate-bounce" style="animation-delay: 0ms" />
                       <span class="size-1.5 rounded-full bg-primary animate-bounce" style="animation-delay: 150ms" />
                       <span class="size-1.5 rounded-full bg-primary animate-bounce" style="animation-delay: 300ms" />
-                      <span class="text-xs font-medium ml-0.5">{{ streamStatusText || '回复中' }}</span>
+                      <span class="text-xs font-medium ml-0.5">{{ streamStatusText }}</span>
                     </div>
                   </div>
                   <div class="text-xs text-muted mt-0.5">
@@ -1329,7 +1477,7 @@ watch(activeSessionId, (val, prev) => {
           <!-- 消息区域 -->
           <div class="flex-1 overflow-hidden relative">
             <div v-if="activeSessionId" class="h-full flex flex-col">
-              <div ref="chatBodyRef" class="flex-1 overflow-y-auto p-6">
+              <div ref="chatBodyRef" class="flex-1 overflow-y-auto p-6" @scroll="updateScrollAnchor">
                 <div class="max-w-4xl mx-auto space-y-5 md:space-y-6">
                   <div
                     v-for="(msg, index) in chatHistory"
@@ -1378,7 +1526,35 @@ watch(activeSessionId, (val, prev) => {
                             : 'bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/40 rounded-tl-sm'"
                       >
                         <!-- 消息内容 -->
-                        <div v-if="Array.isArray(msg.meta?.card)" class="space-y-3">
+                        <div v-if="msg.meta?.approval && typeof msg.meta.approval === 'object'" class="space-y-3 max-w-[280px]">
+                          <div class="flex items-center justify-between gap-3">
+                            <div class="text-sm font-semibold">
+                              审批请求
+                            </div>
+                            <NTag size="small" round :bordered="false" :type="approvalStatusType(msg.meta.approval.status)">
+                              {{ approvalStatusText(msg.meta.approval.status) }}
+                            </NTag>
+                          </div>
+                          <div class="space-y-1.5 text-sm text-muted">
+                            <div v-for="(row, ridx) in approvalRows(msg)" :key="`approval-row-${ridx}`" class="flex justify-between gap-3">
+                              <div class="flex-none">
+                                {{ row.name }}
+                              </div>
+                              <div class="text-right break-all text-default">
+                                {{ row.value }}
+                              </div>
+                            </div>
+                          </div>
+                          <div v-if="canReplyApproval(msg)" class="flex justify-end gap-2">
+                            <NButton secondary type="error" :disabled="sending" @click="handleApprovalReply('拒绝')">
+                              拒绝
+                            </NButton>
+                            <NButton type="primary" :disabled="sending" @click="handleApprovalReply('同意')">
+                              同意
+                            </NButton>
+                          </div>
+                        </div>
+                        <div v-else-if="Array.isArray(msg.meta?.card)" class="space-y-3">
                           <div
                             v-for="(card, cidx) in msg.meta.card"
                             :key="`card-${cidx}`"
@@ -1532,7 +1708,7 @@ watch(activeSessionId, (val, prev) => {
               </div>
 
               <!-- 加载状态 -->
-              <div v-if="messagesLoading" class="absolute inset-0 flex items-center justify-center">
+              <div v-if="messagesLoading && !chatHistory.length" class="absolute inset-0 flex items-center justify-center">
                 <div class="text-center space-y-4">
                   <NSpin size="large" />
                   <div class="text-sm font-medium text-muted">
@@ -1569,12 +1745,6 @@ watch(activeSessionId, (val, prev) => {
               <div v-if="!sending && sessionNotice" class="mb-2 flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50/95 px-3 py-2 text-xs text-amber-700 shadow-sm dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-300">
                 <i class="i-tabler:clock-hour-4 text-sm" />
                 <span>{{ sessionNotice }}</span>
-              </div>
-              <div v-if="sending && streamStatusText" class="mb-2 flex items-center gap-2 rounded-xl border px-3 py-2 text-xs shadow-sm bg-white/95 dark:bg-gray-900/95"
-                :class="streamStatusTone === 'warning' ? 'border-amber-200 text-amber-700 dark:border-amber-800 dark:text-amber-300' : streamStatusTone === 'info' ? 'border-sky-200 text-sky-700 dark:border-sky-800 dark:text-sky-300' : 'border-primary/20 text-primary'"
-              >
-                <i class="i-tabler:loader-2 animate-spin text-sm" />
-                <span>{{ streamStatusText }}</span>
               </div>
               <!-- 输入框容器 -->
               <div class="overflow-hidden bg-white dark:bg-gray-800 border rounded-xl border-gray-200 dark:border-gray-700 shadow-lg shadow-black/5">

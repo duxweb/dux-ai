@@ -471,7 +471,7 @@
         {
             "name": "duxweb/ai",
             "description": "AI Provider Management",
-            "version": "0.2.1",
+            "version": "0.2.2",
             "phpDependencies": {
                 "neuron-core/neuron-ai": "^3.0",
                 "rap2hpoutre/fast-excel": "^5.6",
