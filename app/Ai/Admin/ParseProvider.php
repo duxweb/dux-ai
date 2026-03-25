@@ -7,6 +7,7 @@ namespace App\Ai\Admin;
 use App\Ai\Models\ParseProvider as ParseProviderModel;
 use App\Ai\Service\CodeGenerator;
 use App\Ai\Service\Parse;
+use App\System\Service\Config as SystemConfigService;
 use Core\Resources\Action\Resources;
 use Core\Resources\Attribute\Action;
 use Core\Resources\Attribute\Resource;
@@ -48,16 +49,26 @@ class ParseProvider extends Resources
 
     public function validator(array $data, ServerRequestInterface $request, array $args): array
     {
-        return [
+        $storageId = $data['storage_id'] ?? ($data['config']['__storage_id'] ?? null);
+        $rules = [
             'name' => ['required', '请输入配置名称'],
             'provider' => ['required', '请选择服务商'],
         ];
+
+        if (($data['provider'] ?? '') === 'volcengine_doc' && !$storageId && !SystemConfigService::getValue('system.storage')) {
+            $rules['storage_id'] = ['required', '请选择存储驱动，或先在系统设置中配置默认存储'];
+        }
+
+        return $rules;
     }
 
     public function format(Data $data, ServerRequestInterface $request, array $args): array
     {
         $id = (int)($args['id'] ?? 0);
         $inputCode = trim((string)$data->code);
+        $config = is_array($data->config) ? $data->config : [];
+        $storageId = $data->storage_id ?: ($config['__storage_id'] ?? null);
+        unset($config['__storage_id']);
         $code = $inputCode !== ''
             ? $inputCode
             : CodeGenerator::unique(
@@ -74,9 +85,9 @@ class ParseProvider extends Resources
             'name' => (string)$data->name,
             'code' => $code,
             'provider' => (string)$data->provider,
-            'storage_id' => $data->storage_id ? (int)$data->storage_id : null,
+            'storage_id' => $storageId ? (int)$storageId : null,
             'description' => $data->description ?: null,
-            'config' => is_array($data->config) ? $data->config : [],
+            'config' => $config,
         ];
     }
 

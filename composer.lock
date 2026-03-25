@@ -56,11 +56,11 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.373.7",
+            "version": "3.373.9",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/aws/aws-sdk-php/3.373.7/aws-aws-sdk-php-3.373.7.zip",
-                "reference": "4402bd10f913e66b7271f44466be8d5ba6c9146e",
+                "url": "https://mirrors.tencent.com/repository/composer/aws/aws-sdk-php/3.373.9/aws-aws-sdk-php-3.373.9.zip",
+                "reference": "a73e12fe5d010f3c6cda2f6f020b5a475444487d",
                 "shasum": ""
             },
             "require": {
@@ -141,9 +141,9 @@
             "support": {
                 "forum": "https://github.com/aws/aws-sdk-php/discussions",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.373.7"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.373.9"
             },
-            "time": "2026-03-20T18:14:19+00:00"
+            "time": "2026-03-24T18:06:07+00:00"
         },
         {
             "name": "brick/math",
@@ -1149,11 +1149,11 @@
         },
         {
             "name": "duxweb/dux-lite",
-            "version": "v2.4.3",
+            "version": "v2.4.7",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/duxweb/dux-lite/v2.4.3/duxweb-dux-lite-v2.4.3.zip",
-                "reference": "b9e33e07be52e6c745c62eb725208dba99355ea7",
+                "url": "https://mirrors.tencent.com/repository/composer/duxweb/dux-lite/v2.4.7/duxweb-dux-lite-v2.4.7.zip",
+                "reference": "2d40f5f23cf9ccb5833f42b86795f7fb0ef3e1a1",
                 "shasum": ""
             },
             "require": {
@@ -1237,7 +1237,7 @@
                 "issues": "https://github.com/duxweb/dux-lite/issues",
                 "source": "https://github.com/duxweb/dux-lite"
             },
-            "time": "2026-03-19T12:56:55+00:00"
+            "time": "2026-03-23T04:16:07+00:00"
         },
         {
             "name": "duxweb/dux-lite-cloud",
@@ -1285,11 +1285,11 @@
         },
         {
             "name": "duxweb/dux-lite-runtime",
-            "version": "v0.1.2",
+            "version": "v0.1.3",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/duxweb/dux-lite-runtime/v0.1.2/duxweb-dux-lite-runtime-v0.1.2.zip",
-                "reference": "01960c70b81dbcca61349329943c789aedcd6efe",
+                "url": "https://mirrors.tencent.com/repository/composer/duxweb/dux-lite-runtime/v0.1.3/duxweb-dux-lite-runtime-v0.1.3.zip",
+                "reference": "da8de5616e0f2bb5737da5d1eb0815c65e5966a5",
                 "shasum": ""
             },
             "require": {
@@ -1320,9 +1320,9 @@
             "description": "DuxLite runtime extension package",
             "support": {
                 "issues": "https://github.com/duxweb/dux-lite-runtime/issues",
-                "source": "https://github.com/duxweb/dux-lite-runtime/tree/v0.1.2"
+                "source": "https://github.com/duxweb/dux-lite-runtime/tree/v0.1.3"
             },
-            "time": "2026-03-13T14:28:48+00:00"
+            "time": "2026-03-23T04:00:47+00:00"
         },
         {
             "name": "eftec/bladeone",
@@ -1525,11 +1525,11 @@
         },
         {
             "name": "fileeye/mimemap",
-            "version": "2.2.4",
+            "version": "2.2.5",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/fileeye/mimemap/2.2.4/fileeye-mimemap-2.2.4.zip",
-                "reference": "83664df5aae5e5df55f37a2b7d10b0ce4b46b778",
+                "url": "https://mirrors.tencent.com/repository/composer/fileeye/mimemap/2.2.5/fileeye-mimemap-2.2.5.zip",
+                "reference": "d85461d6663501d29d1838d1ad65222a1ce44d7b",
                 "shasum": ""
             },
             "require": {
@@ -1571,9 +1571,9 @@
             ],
             "support": {
                 "issues": "https://github.com/FileEye/MimeMap/issues",
-                "source": "https://github.com/FileEye/MimeMap/tree/2.2.4"
+                "source": "https://github.com/FileEye/MimeMap/tree/2.2.5"
             },
-            "time": "2026-01-02T12:46:25+00:00"
+            "time": "2026-03-22T21:57:45+00:00"
         },
         {
             "name": "firebase/php-jwt",
@@ -3199,11 +3199,11 @@
         },
         {
             "name": "latte/latte",
-            "version": "v3.1.2",
+            "version": "v3.1.3",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/latte/latte/v3.1.2/latte-latte-v3.1.2.zip",
-                "reference": "734ab908c17b28bd75b9331debd1901bec2f23ef",
+                "url": "https://mirrors.tencent.com/repository/composer/latte/latte/v3.1.3/latte-latte-v3.1.3.zip",
+                "reference": "d9f96802ef103705f8a389cd66cbf830d470b537",
                 "shasum": ""
             },
             "require": {
@@ -3278,9 +3278,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nette/latte/issues",
-                "source": "https://github.com/nette/latte/tree/v3.1.2"
+                "source": "https://github.com/nette/latte/tree/v3.1.3"
             },
-            "time": "2026-02-24T21:38:20+00:00"
+            "time": "2026-03-22T23:12:17+00:00"
         },
         {
             "name": "league/mime-type-detection",
@@ -3835,11 +3835,11 @@
         },
         {
             "name": "neuron-core/neuron-ai",
-            "version": "3.2.9",
+            "version": "3.2.11",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/neuron-core/neuron-ai/3.2.9/neuron-core-neuron-ai-3.2.9.zip",
-                "reference": "14585b4658896985be9c125fae10c7d5a1659645",
+                "url": "https://mirrors.tencent.com/repository/composer/neuron-core/neuron-ai/3.2.11/neuron-core-neuron-ai-3.2.11.zip",
+                "reference": "d56213b85a7cd991e83bcc2f0fc35cdc8ccb8175",
                 "shasum": ""
             },
             "require": {
@@ -3889,9 +3889,9 @@
             "description": "The PHP Agentic Framework.",
             "support": {
                 "issues": "https://github.com/neuron-core/neuron-ai/issues",
-                "source": "https://github.com/neuron-core/neuron-ai/tree/3.2.9"
+                "source": "https://github.com/neuron-core/neuron-ai/tree/3.2.11"
             },
-            "time": "2026-03-20T17:51:45+00:00"
+            "time": "2026-03-23T14:16:11+00:00"
         },
         {
             "name": "nikic/fast-route",
@@ -5314,21 +5314,21 @@
         },
         {
             "name": "rap2hpoutre/fast-excel",
-            "version": "v5.6.0",
+            "version": "v5.7.0",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/rap2hpoutre/fast-excel/v5.6.0/rap2hpoutre-fast-excel-v5.6.0.zip",
-                "reference": "a460ac5b78f01162eadcae49053017686c53e102",
+                "url": "https://mirrors.tencent.com/repository/composer/rap2hpoutre/fast-excel/v5.7.0/rap2hpoutre-fast-excel-v5.7.0.zip",
+                "reference": "c5c2118c4e1b20395cab3d7ad32648ea9331c5cc",
                 "shasum": ""
             },
             "require": {
-                "illuminate/support": "^6.0 || ^7.0 || ^8.0 || ^9.0 || ^10.0 || ^11.0 || ^12.0",
+                "illuminate/support": "^6.0 || ^7.0 || ^8.0 || ^9.0 || ^10.0 || ^11.0 || ^12.0 || ^13.0",
                 "openspout/openspout": "^4.24",
                 "php": "^8.0"
             },
             "require-dev": {
-                "illuminate/database": "^6.20.12 || ^7.30.4 || ^8.24.0 || ^9.0 || ^10.0 || ^11.0 || ^12.0",
-                "phpunit/phpunit": "^9.5 || ^10.1",
+                "illuminate/database": "^6.20.12 || ^7.30.4 || ^8.24.0 || ^9.0 || ^10.0 || ^11.0 || ^12.0 || ^13.0",
+                "phpunit/phpunit": "^9.5 || ^10.1 || ^11.0 || ^12.0 || ^13.0",
                 "squizlabs/php_codesniffer": "3.*"
             },
             "type": "library",
@@ -5366,9 +5366,9 @@
             ],
             "support": {
                 "issues": "https://github.com/rap2hpoutre/fast-excel/issues",
-                "source": "https://github.com/rap2hpoutre/fast-excel/tree/v5.6.0"
+                "source": "https://github.com/rap2hpoutre/fast-excel/tree/v5.7.0"
             },
-            "time": "2025-02-18T12:50:31+00:00"
+            "time": "2026-03-24T09:13:16+00:00"
         },
         {
             "name": "react/event-loop",
@@ -8105,11 +8105,11 @@
     "packages-dev": [
         {
             "name": "brianium/paratest",
-            "version": "v7.19.0",
+            "version": "v7.19.2",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/brianium/paratest/v7.19.0/brianium-paratest-v7.19.0.zip",
-                "reference": "7c6c29af7c4b406b49ce0c6b0a3a81d3684474e6",
+                "url": "https://mirrors.tencent.com/repository/composer/brianium/paratest/v7.19.2/brianium-paratest-v7.19.2.zip",
+                "reference": "66e4f7910cecf67736bccf2b8bd53a2e3eb98bd9",
                 "shasum": ""
             },
             "require": {
@@ -8123,9 +8123,9 @@
                 "phpunit/php-code-coverage": "^12.5.3 || ^13.0.1",
                 "phpunit/php-file-iterator": "^6.0.1 || ^7",
                 "phpunit/php-timer": "^8 || ^9",
-                "phpunit/phpunit": "^12.5.9 || ^13",
+                "phpunit/phpunit": "^12.5.14 || ^13.0.5",
                 "sebastian/environment": "^8.0.3 || ^9",
-                "symfony/console": "^7.4.4 || ^8.0.4",
+                "symfony/console": "^7.4.7 || ^8.0.7",
                 "symfony/process": "^7.4.5 || ^8.0.5"
             },
             "require-dev": {
@@ -8133,11 +8133,11 @@
                 "ext-pcntl": "*",
                 "ext-pcov": "*",
                 "ext-posix": "*",
-                "phpstan/phpstan": "^2.1.38",
-                "phpstan/phpstan-deprecation-rules": "^2.0.3",
-                "phpstan/phpstan-phpunit": "^2.0.12",
-                "phpstan/phpstan-strict-rules": "^2.0.8",
-                "symfony/filesystem": "^7.4.0 || ^8.0.1"
+                "phpstan/phpstan": "^2.1.40",
+                "phpstan/phpstan-deprecation-rules": "^2.0.4",
+                "phpstan/phpstan-phpunit": "^2.0.16",
+                "phpstan/phpstan-strict-rules": "^2.0.10",
+                "symfony/filesystem": "^7.4.6 || ^8.0.6"
             },
             "bin": [
                 "bin/paratest",
@@ -8176,9 +8176,9 @@
             ],
             "support": {
                 "issues": "https://github.com/paratestphp/paratest/issues",
-                "source": "https://github.com/paratestphp/paratest/tree/v7.19.0"
+                "source": "https://github.com/paratestphp/paratest/tree/v7.19.2"
             },
-            "time": "2026-02-06T10:53:26+00:00"
+            "time": "2026-03-09T14:33:17+00:00"
         },
         {
             "name": "fidry/cpu-core-counter",
@@ -8520,15 +8520,15 @@
         },
         {
             "name": "pestphp/pest",
-            "version": "v4.4.2",
+            "version": "v4.4.3",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/pestphp/pest/v4.4.2/pestphp-pest-v4.4.2.zip",
-                "reference": "5d42e8fe3ae1d9fdf7c9f73ee88138fd30265701",
+                "url": "https://mirrors.tencent.com/repository/composer/pestphp/pest/v4.4.3/pestphp-pest-v4.4.3.zip",
+                "reference": "e6ab897594312728ef2e32d586cb4f6780b1b495",
                 "shasum": ""
             },
             "require": {
-                "brianium/paratest": "^7.19.0",
+                "brianium/paratest": "^7.19.2",
                 "nunomaduro/collision": "^8.9.1",
                 "nunomaduro/termwind": "^2.4.0",
                 "pestphp/pest-plugin": "^4.0.0",
@@ -8536,12 +8536,12 @@
                 "pestphp/pest-plugin-mutate": "^4.0.1",
                 "pestphp/pest-plugin-profanity": "^4.2.1",
                 "php": "^8.3.0",
-                "phpunit/phpunit": "^12.5.12",
+                "phpunit/phpunit": "^12.5.14",
                 "symfony/process": "^7.4.5|^8.0.5"
             },
             "conflict": {
                 "filp/whoops": "<2.18.3",
-                "phpunit/phpunit": ">12.5.12",
+                "phpunit/phpunit": ">12.5.14",
                 "sebastian/exporter": "<7.0.0",
                 "webmozart/assert": "<1.11.0"
             },
@@ -8614,9 +8614,9 @@
             ],
             "support": {
                 "issues": "https://github.com/pestphp/pest/issues",
-                "source": "https://github.com/pestphp/pest/tree/v4.4.2"
+                "source": "https://github.com/pestphp/pest/tree/v4.4.3"
             },
-            "time": "2026-03-10T21:09:12+00:00"
+            "time": "2026-03-21T13:14:39+00:00"
         },
         {
             "name": "pestphp/pest-plugin",
@@ -9391,11 +9391,11 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "12.5.12",
+            "version": "12.5.14",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/phpunit/phpunit/12.5.12/phpunit-phpunit-12.5.12.zip",
-                "reference": "418e06b3b46b0d54bad749ff4907fc7dfb530199",
+                "url": "https://mirrors.tencent.com/repository/composer/phpunit/phpunit/12.5.14/phpunit-phpunit-12.5.14.zip",
+                "reference": "47283cfd98d553edcb1353591f4e255dc1bb61f0",
                 "shasum": ""
             },
             "require": {
@@ -9463,9 +9463,9 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/12.5.12"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/12.5.14"
             },
-            "time": "2026-02-16T08:34:36+00:00"
+            "time": "2026-02-18T12:38:40+00:00"
         },
         {
             "name": "sebastian/cli-parser",

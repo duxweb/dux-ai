@@ -115,7 +115,9 @@ final class MoonshotDriver implements DriverInterface
         } catch (GuzzleException $e) {
             throw new ExceptionBusiness('Moonshot 文件上传请求失败：' . $e->getMessage());
         } finally {
-            fclose($file);
+            if (is_resource($file)) {
+                fclose($file);
+            }
         }
 
         return $this->decodeJson((string)$response->getBody()->getContents(), 'Moonshot 上传返回异常');

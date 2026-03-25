@@ -6,12 +6,15 @@ namespace App\Ai\Service\Parse\Drivers;
 
 use App\Ai\Models\ParseProvider;
 use App\Ai\Service\Parse\Contracts\DriverInterface;
+use App\Ai\Support\AiRuntime;
+use App\System\Service\Config as ConfigService;
 use App\System\Service\Storage as StorageService;
 use App\System\Service\Upload as UploadService;
 use Core\Handlers\ExceptionBusiness;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\RequestOptions;
+use Throwable;
 
 final class VolcengineDriver implements DriverInterface
 {
@@ -21,6 +24,7 @@ final class VolcengineDriver implements DriverInterface
     private const REGION = 'cn-north-1';
     private const SERVICE = 'cv';
     private const CONTENT_TYPE = 'application/x-www-form-urlencoded; charset=utf-8';
+    private const REQUEST_TIMEOUT = 60;
 
     public static function meta(): array
     {
@@ -28,14 +32,16 @@ final class VolcengineDriver implements DriverInterface
             'label' => '火山引擎解析',
             'description' => '使用火山引擎 OCRPdf 接口解析 PDF/图片文档，返回 markdown 或结构化文本。',
             'register_url' => 'https://console.volcengine.com/iam/keymanage/',
+            'open_url' => 'https://www.volcengine.com/product/OCR',
+            'open_label' => '开通',
             'form_schema' => [
                 ['tag' => 'dux-form-item', 'attrs' => ['label' => 'AccessKeyId', 'required' => true], 'children' => [['tag' => 'n-input', 'attrs' => ['v-model:value' => 'config.access_key_id']]]],
                 ['tag' => 'dux-form-item', 'attrs' => ['label' => 'SecretAccessKey', 'required' => true], 'children' => [['tag' => 'n-input', 'attrs' => ['v-model:value' => 'config.secret_access_key']]]],
                 ['tag' => 'dux-form-item', 'attrs' => ['label' => '安全令牌(STS 可选)'], 'children' => [['tag' => 'n-input', 'attrs' => ['v-model:value' => 'config.security_token']]]],
-                ['tag' => 'dux-form-item', 'attrs' => ['label' => '存储驱动', 'required' => true, 'tooltip' => '当仅有 filePath 时用于自动转存生成可访问 URL'], 'children' => [[
+                ['tag' => 'dux-form-item', 'attrs' => ['label' => '存储驱动', 'tooltip' => '当仅有 filePath 时用于自动转存生成可访问 URL，留空时回退系统默认存储'], 'children' => [[
                     'tag' => 'dux-select',
                     'attrs' => [
-                        'v-model:value.number' => 'storage_id',
+                        'v-model:value.number' => 'config.__storage_id',
                         'path' => 'system/storage',
                         'label-field' => 'title',
                         'value-field' => 'id',
@@ -60,21 +66,38 @@ final class VolcengineDriver implements DriverInterface
         }
 
         $securityToken = trim((string)($config['security_token'] ?? ''));
+        $logEnabled = (bool)($config['log_enabled'] ?? false);
+        $logger = AiRuntime::log('ai.docs');
+        $fileName = trim((string)($options['file_name'] ?? ''));
+        if ($fileName === '') {
+            $fileName = basename($filePath);
+        }
+
+        $storageId = 0;
         try {
             if ($fileUrl === '') {
-                $storageId = (int)($provider->storage_id ?? 0);
+                $storageId = $this->resolveStorageId($provider);
                 if ($storageId <= 0) {
-                    throw new ExceptionBusiness('火山解析驱动缺少存储驱动配置');
+                    throw new ExceptionBusiness('火山解析驱动缺少存储驱动配置，请在解析配置中选择存储驱动，或先配置系统默认存储');
                 }
                 if (!is_file($filePath)) {
                     throw new ExceptionBusiness('火山解析驱动缺少可用的 filePath');
                 }
-                $fileName = trim((string)($options['file_name'] ?? ''));
-                if ($fileName === '') {
-                    $fileName = basename($filePath);
-                }
                 [$fileUrl, $uploadedPath] = $this->uploadLocalFile($filePath, $fileName, $storageId);
                 $uploadedStorageId = $storageId;
+            }
+
+            $requestBody = $this->buildBody($fileUrl, $fileType, $options);
+            if ($logEnabled) {
+                $logger->info('parse.volc.start', [
+                    'file_name' => $fileName,
+                    'file_type' => $fileType,
+                    'request_file_type' => $requestBody['file_type'] ?? '',
+                    'storage_id' => $storageId ?: null,
+                    'has_file_url' => $fileUrl !== '',
+                    'file_url_host' => (string)(parse_url($fileUrl, PHP_URL_HOST) ?? ''),
+                    'timeout' => self::REQUEST_TIMEOUT,
+                ]);
             }
 
             $response = $this->request(
@@ -82,13 +105,33 @@ final class VolcengineDriver implements DriverInterface
                 $accessKeyId,
                 $secretAccessKey,
                 $securityToken,
-                $this->buildBody($fileUrl, $fileType, $options)
+                $requestBody
             );
 
-            $decoded = $this->decodeJson((string)$response->getBody()->getContents());
-            $this->assertSuccess($decoded);
+            $statusCode = $response->getStatusCode();
+            $responseBody = (string)$response->getBody()->getContents();
+            $decoded = $this->decodeJson($responseBody, $statusCode);
+            $this->assertSuccess($decoded, $statusCode, $responseBody);
+
+            if ($logEnabled) {
+                $logger->info('parse.volc.success', [
+                    'file_name' => $fileName,
+                    'file_type' => $fileType,
+                    'http_code' => $statusCode,
+                    'response_code' => (string)($decoded['code'] ?? ''),
+                    'request_id' => $this->extractRequestId($decoded),
+                ]);
+            }
 
             return $this->extractContent($decoded);
+        } catch (Throwable $e) {
+            $logger->error('parse.volc.failed', [
+                'file_name' => $fileName,
+                'file_type' => $fileType,
+                'storage_id' => $storageId ?: null,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
         } finally {
             if ($uploadedPath !== '' && $uploadedStorageId > 0) {
                 $this->cleanupUploadedObject($uploadedStorageId, $uploadedPath);
@@ -96,10 +139,20 @@ final class VolcengineDriver implements DriverInterface
         }
     }
 
+    private function resolveStorageId(ParseProvider $provider): int
+    {
+        $storageId = (int)($provider->storage_id ?? 0);
+        if ($storageId > 0) {
+            return $storageId;
+        }
+
+        return (int)ConfigService::getValue('system.storage');
+    }
+
     private function newClient(): Client
     {
         return new Client([
-            'timeout' => 10,
+            'timeout' => self::REQUEST_TIMEOUT,
             'http_errors' => false,
         ]);
     }
@@ -227,11 +280,15 @@ final class VolcengineDriver implements DriverInterface
     /**
      * @return array<string, mixed>
      */
-    private function decodeJson(string $body): array
+    private function decodeJson(string $body, int $statusCode): array
     {
         $decoded = json_decode($body, true);
         if (!is_array($decoded)) {
-            throw new ExceptionBusiness('火山文档解析返回异常');
+            throw new ExceptionBusiness(sprintf(
+                '火山文档解析返回异常: HTTP %d, %s',
+                $statusCode,
+                $this->bodySnippet($body)
+            ));
         }
         return $decoded;
     }
@@ -239,11 +296,29 @@ final class VolcengineDriver implements DriverInterface
     /**
      * @param array<string, mixed> $decoded
      */
-    private function assertSuccess(array $decoded): void
+    private function assertSuccess(array $decoded, int $statusCode, string $body): void
     {
         if ((string)($decoded['code'] ?? '') !== '10000') {
-            $message = trim((string)($decoded['message'] ?? '火山文档解析失败'));
-            throw new ExceptionBusiness($message !== '' ? $message : '火山文档解析失败');
+            $message = $this->extractErrorMessage($decoded);
+            $parts = ['HTTP ' . $statusCode];
+
+            $code = $this->extractErrorCode($decoded);
+            if ($code !== '') {
+                $parts[] = 'code ' . $code;
+            }
+
+            $requestId = $this->extractRequestId($decoded);
+            if ($requestId !== '') {
+                $parts[] = 'request_id ' . $requestId;
+            }
+
+            $snippet = $this->bodySnippet($body);
+            if ($snippet !== '') {
+                $parts[] = $snippet;
+            }
+
+            $prefix = $message !== '' ? $message : '火山文档解析失败';
+            throw new ExceptionBusiness($prefix . '：' . implode(', ', $parts));
         }
     }
 
@@ -309,5 +384,79 @@ final class VolcengineDriver implements DriverInterface
             StorageService::getObject($storageId)->delete($path);
         } catch (\Throwable) {
         }
+    }
+
+    /**
+     * @param array<string, mixed> $decoded
+     */
+    private function extractRequestId(array $decoded): string
+    {
+        $requestId = trim((string)($decoded['request_id'] ?? $decoded['requestId'] ?? ''));
+        if ($requestId !== '') {
+            return $requestId;
+        }
+
+        $metadata = $decoded['ResponseMetadata'] ?? null;
+        if (is_array($metadata)) {
+            return trim((string)($metadata['RequestId'] ?? ''));
+        }
+
+        return '';
+    }
+
+    /**
+     * @param array<string, mixed> $decoded
+     */
+    private function extractErrorMessage(array $decoded): string
+    {
+        $message = trim((string)($decoded['message'] ?? $decoded['msg'] ?? ''));
+        if ($message !== '') {
+            return $message;
+        }
+
+        $metadata = $decoded['ResponseMetadata'] ?? null;
+        if (is_array($metadata)) {
+            $error = $metadata['Error'] ?? null;
+            if (is_array($error)) {
+                return trim((string)($error['Message'] ?? ''));
+            }
+        }
+
+        return '';
+    }
+
+    /**
+     * @param array<string, mixed> $decoded
+     */
+    private function extractErrorCode(array $decoded): string
+    {
+        $code = trim((string)($decoded['code'] ?? ''));
+        if ($code !== '') {
+            return $code;
+        }
+
+        $metadata = $decoded['ResponseMetadata'] ?? null;
+        if (is_array($metadata)) {
+            $error = $metadata['Error'] ?? null;
+            if (is_array($error)) {
+                return trim((string)($error['Code'] ?? ''));
+            }
+        }
+
+        return '';
+    }
+
+    private function bodySnippet(string $body): string
+    {
+        $body = trim($body);
+        if ($body === '') {
+            return 'empty body';
+        }
+
+        if (mb_strlen($body, 'UTF-8') > 400) {
+            return mb_substr($body, 0, 400, 'UTF-8') . '...';
+        }
+
+        return $body;
     }
 }

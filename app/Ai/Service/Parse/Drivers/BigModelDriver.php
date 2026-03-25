@@ -24,7 +24,6 @@ final class BigModelDriver implements DriverInterface
             'register_url' => 'https://open.bigmodel.cn/',
             'form_schema' => [
                 ['tag' => 'dux-form-item', 'attrs' => ['label' => 'API Key', 'required' => true], 'children' => [['tag' => 'n-input', 'attrs' => ['v-model:value' => 'config.api_key']]]],
-                ['tag' => 'dux-form-item', 'attrs' => ['label' => 'Base URL'], 'children' => [['tag' => 'n-input', 'attrs' => ['v-model:value' => 'config.base_url', 'placeholder' => self::DEFAULT_BASE_URL]]]],
             ],
         ];
     }
@@ -72,7 +71,9 @@ final class BigModelDriver implements DriverInterface
         } catch (GuzzleException $e) {
             throw new ExceptionBusiness('BigModel 文件解析请求失败：' . $e->getMessage());
         } finally {
-            fclose($file);
+            if (is_resource($file)) {
+                fclose($file);
+            }
         }
 
         $payload = $this->decodeJson((string)$response->getBody()->getContents(), 'BigModel 文件解析返回异常');
@@ -82,9 +83,19 @@ final class BigModelDriver implements DriverInterface
             throw new ExceptionBusiness('BigModel 文件解析失败：' . $message);
         }
 
+        $status = trim((string)($payload['status'] ?? ''));
+        $message = trim((string)($payload['message'] ?? $payload['msg'] ?? ''));
+        if ($status !== '' && $status !== 'succeeded') {
+            throw new ExceptionBusiness('BigModel 文件解析失败：' . ($message ?: $status));
+        }
+
         $text = $this->extractText($payload);
         if ($text === '') {
-            throw new ExceptionBusiness('BigModel 文件解析结果为空');
+            $downloadUrl = trim((string)($payload['parsing_result_url'] ?? ''));
+            if ($downloadUrl !== '') {
+                throw new ExceptionBusiness('BigModel 文件解析未返回文本内容，结果下载地址：' . $downloadUrl);
+            }
+            throw new ExceptionBusiness('BigModel 文件解析结果为空：' . ($message ?: '未返回 content'));
         }
 
         return $text;
@@ -112,11 +123,11 @@ final class BigModelDriver implements DriverInterface
     {
         $type = strtolower(trim($fileType));
         if ($type !== '') {
-            return $type;
+            return strtoupper($type);
         }
         $ext = pathinfo($fileName, PATHINFO_EXTENSION);
         $ext = strtolower(trim((string)$ext));
-        return $ext !== '' ? $ext : 'pdf';
+        return $ext !== '' ? strtoupper($ext) : 'PDF';
     }
 
     /**

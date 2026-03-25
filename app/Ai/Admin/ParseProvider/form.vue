@@ -50,6 +50,16 @@ const providerRegisterUrl = computed(() => {
   return typeof value === 'string' ? value.trim() : ''
 })
 
+const providerOpenUrl = computed(() => {
+  const value = selectedProviderMeta.value?.open_url
+  return typeof value === 'string' ? value.trim() : ''
+})
+
+const providerOpenLabel = computed(() => {
+  const value = selectedProviderMeta.value?.open_label
+  return typeof value === 'string' && value.trim() ? value.trim() : '开通'
+})
+
 const providerFormSchema = computed(() => {
   const schema = selectedProviderMeta.value?.form_schema
   return Array.isArray(schema) ? schema : []
@@ -60,6 +70,13 @@ function openProviderRegisterUrl() {
     return
   }
   window.open(providerRegisterUrl.value, '_blank', 'noopener,noreferrer')
+}
+
+function openProviderOpenUrl() {
+  if (!providerOpenUrl.value) {
+    return
+  }
+  window.open(providerOpenUrl.value, '_blank', 'noopener,noreferrer')
 }
 
 const { render: providerConfigRender } = useJsonSchema({
@@ -78,8 +95,20 @@ watch(
     if (typeof config.log_enabled !== 'boolean') {
       config.log_enabled = !!config.log_enabled
     }
+    if (config.__storage_id !== model.value.storage_id) {
+      config.__storage_id = model.value.storage_id
+    }
   },
   { immediate: true, deep: true },
+)
+
+watch(
+  () => model.value.config?.__storage_id,
+  (value) => {
+    if (value !== model.value.storage_id) {
+      model.value.storage_id = value
+    }
+  },
 )
 
 onMounted(async () => {
@@ -123,14 +152,19 @@ onMounted(async () => {
 
     <NTabPane name="config" label="驱动配置">
       <DuxFormLayout label-placement="top" class="pb-4">
-        <DuxFormItem v-if="providerDescription || providerRegisterUrl" label="驱动信息">
+        <DuxFormItem v-if="providerDescription || providerRegisterUrl || providerOpenUrl" label="驱动信息">
           <div class="flex flex-col gap-2 rounded border border-primary/15 bg-primary/5 p-3">
             <div class="text-sm text-muted leading-6">
               {{ providerDescription || '该驱动暂未提供说明' }}
             </div>
-            <NButton v-if="providerRegisterUrl" type="primary" secondary @click="openProviderRegisterUrl">
-              注册/文档
-            </NButton>
+            <div class="flex gap-2">
+              <NButton v-if="providerOpenUrl" type="primary" @click="openProviderOpenUrl">
+                {{ providerOpenLabel }}
+              </NButton>
+              <NButton v-if="providerRegisterUrl" type="primary" secondary @click="openProviderRegisterUrl">
+                注册/文档
+              </NButton>
+            </div>
           </div>
         </DuxFormItem>
 

@@ -47,298 +47,6 @@
             "app": "boot"
         },
         {
-            "name": "duxweb/ai",
-            "description": "AI Provider Management",
-            "version": "0.2.3",
-            "phpDependencies": {
-                "neuron-core/neuron-ai": "^3.0",
-                "rap2hpoutre/fast-excel": "^5.6",
-                "phpoffice/phpword": "^1.4",
-                "thiagoalessio/tesseract_ocr": "^2.13",
-                "spatie/pdf-to-image": "^3.2",
-                "php-ffmpeg/php-ffmpeg": "^1.4"
-            },
-            "adminMenu": [
-                {
-                    "type": "directory",
-                    "label": "AI",
-                    "label_lang": "ai",
-                    "name": "ai",
-                    "path": null,
-                    "icon": "i-tabler:brand-openai",
-                    "loader": null,
-                    "hidden": false,
-                    "sort": 650,
-                    "children": [
-                        {
-                            "type": "menu",
-                            "label": "智能助手",
-                            "label_lang": "ai.home",
-                            "name": "ai.home",
-                            "path": "ai/home",
-                            "loader": "Ai/Home/index",
-                            "hidden": false,
-                            "children": [
-                                {
-                                    "type": "menu",
-                                    "label": "配置向导",
-                                    "label_lang": "ai.onboarding.page",
-                                    "name": "ai.onboarding.page",
-                                    "path": "ai/onboarding",
-                                    "loader": "Ai/Onboarding/page",
-                                    "hidden": true
-                                },
-                                {
-                                    "type": "menu",
-                                    "label": "AI对话",
-                                    "label_lang": "ai.agent.chat",
-                                    "name": "ai.agent.chat",
-                                    "path": "ai/agent/chat/:code",
-                                    "loader": "Ai/Agent/chatPage",
-                                    "hidden": true
-                                },
-                                {
-                                    "type": "menu",
-                                    "label": "流程执行",
-                                    "label_lang": "ai.flow.chat",
-                                    "name": "ai.flow.chat",
-                                    "path": "ai/flow/chat/:id",
-                                    "loader": "Ai/Flow/executePage",
-                                    "hidden": true
-                                }
-                            ]
-                        },
-                        {
-                            "type": "directory",
-                            "label": "记录管理",
-                            "name": "ai.session.manage",
-                            "path": null,
-                            "hidden": false,
-                            "children": [
-                                {
-                                    "type": "menu",
-                                    "label": "流程记录",
-                                    "label_lang": "ai.flowRun.list",
-                                    "name": "ai.flowRun.list",
-                                    "path": "ai/flowRun",
-                                    "loader": "Ai/FlowRun/table",
-                                    "hidden": false
-                                },
-                                {
-                                    "type": "menu",
-                                    "label": "会话记录",
-                                    "label_lang": "ai.session.list",
-                                    "name": "ai.session.list",
-                                    "path": "ai/session",
-                                    "loader": "Ai/Session/table",
-                                    "hidden": false
-                                },
-                                {
-                                    "type": "menu",
-                                    "label": "调度任务",
-                                    "label_lang": "ai.scheduler.list",
-                                    "name": "ai.scheduler.list",
-                                    "path": "ai/scheduler",
-                                    "loader": "Ai/Scheduler/table",
-                                    "hidden": false
-                                }
-                            ]
-                        },
-                        {
-                            "type": "directory",
-                            "label": "AI 管理",
-                            "label_lang": "ai.manage",
-                            "name": "ai.manage",
-                            "path": "ai/home",
-                            "hidden": false,
-                            "children": [
-                                {
-                                    "type": "menu",
-                                    "label": "工作流",
-                                    "label_lang": "ai.flow.list",
-                                    "name": "ai.flow.list",
-                                    "path": "ai/flow",
-                                    "loader": "Ai/Flow/table",
-                                    "hidden": false,
-                                    "children": [
-                                        {
-                                            "type": "menu",
-                                            "label": "新增流程",
-                                            "label_lang": "ai.flow.create",
-                                            "name": "ai.flow.create",
-                                            "path": "ai/flow/create",
-                                            "loader": "Ai/Flow/page",
-                                            "hidden": true
-                                        },
-                                        {
-                                            "type": "menu",
-                                            "label": "编辑流程",
-                                            "label_lang": "ai.flow.edit",
-                                            "name": "ai.flow.edit",
-                                            "path": "ai/flow/edit/:id",
-                                            "loader": "Ai/Flow/page",
-                                            "hidden": true
-                                        }
-                                    ]
-                                },
-                                {
-                                    "type": "menu",
-                                    "label": "智能体",
-                                    "label_lang": "ai.agent.list",
-                                    "name": "ai.agent.list",
-                                    "path": "ai/agent",
-                                    "loader": "Ai/Agent/table",
-                                    "hidden": false,
-                                    "children": [
-                                        {
-                                            "type": "menu",
-                                            "label": "新增智能体",
-                                            "label_lang": "ai.agent.create",
-                                            "name": "ai.agent.create",
-                                            "path": "ai/agent/create",
-                                            "loader": "Ai/Agent/form",
-                                            "hidden": true
-                                        },
-                                        {
-                                            "type": "menu",
-                                            "label": "编辑智能体",
-                                            "label_lang": "ai.agent.edit",
-                                            "name": "ai.agent.edit",
-                                            "path": "ai/agent/edit/:id",
-                                            "loader": "Ai/Agent/form",
-                                            "hidden": true
-                                        }
-                                    ]
-                                }
-                            ]
-                        },
-                        {
-                            "type": "directory",
-                            "label": "知识库",
-                            "label_lang": "ai.rag",
-                            "name": "ai.rag",
-                            "path": null,
-                            "loader": null,
-                            "hidden": false,
-                            "children": [
-                                {
-                                    "type": "menu",
-                                    "label": "文档库管理",
-                                    "label_lang": "ai.ragKnowledge.list",
-                                    "name": "ai.ragKnowledge.list",
-                                    "path": "ai/ragKnowledge",
-                                    "loader": "Ai/RagKnowledge/table",
-                                    "hidden": false
-                                },
-                                {
-                                    "type": "menu",
-                                    "label": "文件导入",
-                                    "label_lang": "ai.ragKnowledgeData.import",
-                                    "name": "ai.ragKnowledgeData.import",
-                                    "path": "ai/ragImport",
-                                    "loader": "Ai/RagImport/index",
-                                    "hidden": false
-                                },
-                                {
-                                    "type": "menu",
-                                    "label": "内容管理",
-                                    "label_lang": "ai.ragKnowledgeData.list",
-                                    "name": "ai.ragKnowledgeData.list",
-                                    "path": "ai/ragKnowledgeData",
-                                    "loader": "Ai/RagKnowledgeData/table",
-                                    "hidden": false
-                                },
-                                {
-                                    "type": "menu",
-                                    "label": "检索测试",
-                                    "label_lang": "ai.ragKnowledge.queryDocs",
-                                    "name": "ai.ragKnowledge.queryDocs",
-                                    "path": "ai/ragTest",
-                                    "loader": "Ai/RagTest/index",
-                                    "hidden": false
-                                }
-                            ]
-                        },
-                        {
-                            "type": "directory",
-                            "label": "AI 配置",
-                            "label_lang": "ai.config",
-                            "name": "ai.config",
-                            "path": null,
-                            "loader": null,
-                            "hidden": false,
-                            "children": [
-                                {
-                                    "type": "menu",
-                                    "label": "OpenAPI 密钥",
-                                    "label_lang": "ai.token.list",
-                                    "name": "ai.token.list",
-                                    "path": "ai/token",
-                                    "loader": "Ai/Token/table",
-                                    "hidden": false
-                                },
-                                {
-                                    "type": "menu",
-                                    "label": "服务商配置",
-                                    "label_lang": "ai.provider.list",
-                                    "name": "ai.provider.list",
-                                    "path": "ai/provider",
-                                    "loader": "Ai/Provider/table",
-                                    "hidden": false
-                                },
-                                {
-                                    "type": "menu",
-                                    "label": "模型管理",
-                                    "label_lang": "ai.model.list",
-                                    "name": "ai.model.list",
-                                    "path": "ai/model",
-                                    "loader": "Ai/Model/table",
-                                    "hidden": false
-                                },
-                                {
-                                    "type": "menu",
-                                    "label": "技能管理",
-                                    "label_lang": "ai.skill.list",
-                                    "name": "ai.skill.list",
-                                    "path": "ai/skill",
-                                    "loader": "Ai/Skill/table",
-                                    "hidden": false
-                                },
-                                {
-                                    "type": "menu",
-                                    "label": "解析配置",
-                                    "label_lang": "ai.parseProvider.list",
-                                    "name": "ai.parseProvider.list",
-                                    "path": "ai/parseProvider",
-                                    "loader": "Ai/ParseProvider/table",
-                                    "hidden": false
-                                },
-                                {
-                                    "type": "menu",
-                                    "label": "向量库配置",
-                                    "label_lang": "ai.vector.list",
-                                    "name": "ai.vector.list",
-                                    "path": "ai/vector",
-                                    "loader": "Ai/Vector/table",
-                                    "hidden": false
-                                },
-                                {
-                                    "type": "menu",
-                                    "label": "知识库配置",
-                                    "label_lang": "ai.ragProvider.list",
-                                    "name": "ai.ragProvider.list",
-                                    "path": "ai/ragProvider",
-                                    "loader": "Ai/RagProvider/table",
-                                    "hidden": false
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ],
-            "app": "ai"
-        },
-        {
             "name": "duxweb/data",
             "description": "Data Application",
             "version": "0.1.4",
@@ -759,6 +467,298 @@
                 }
             ],
             "app": "install"
+        },
+        {
+            "name": "duxweb/ai",
+            "description": "AI Provider Management",
+            "version": "0.2.4",
+            "phpDependencies": {
+                "neuron-core/neuron-ai": "^3.0",
+                "rap2hpoutre/fast-excel": "^5.6",
+                "phpoffice/phpword": "^1.4",
+                "thiagoalessio/tesseract_ocr": "^2.13",
+                "spatie/pdf-to-image": "^3.2",
+                "php-ffmpeg/php-ffmpeg": "^1.4"
+            },
+            "adminMenu": [
+                {
+                    "type": "directory",
+                    "label": "AI",
+                    "label_lang": "ai",
+                    "name": "ai",
+                    "path": null,
+                    "icon": "i-tabler:brand-openai",
+                    "loader": null,
+                    "hidden": false,
+                    "sort": 650,
+                    "children": [
+                        {
+                            "type": "menu",
+                            "label": "智能助手",
+                            "label_lang": "ai.home",
+                            "name": "ai.home",
+                            "path": "ai/home",
+                            "loader": "Ai/Home/index",
+                            "hidden": false,
+                            "children": [
+                                {
+                                    "type": "menu",
+                                    "label": "配置向导",
+                                    "label_lang": "ai.onboarding.page",
+                                    "name": "ai.onboarding.page",
+                                    "path": "ai/onboarding",
+                                    "loader": "Ai/Onboarding/page",
+                                    "hidden": true
+                                },
+                                {
+                                    "type": "menu",
+                                    "label": "AI对话",
+                                    "label_lang": "ai.agent.chat",
+                                    "name": "ai.agent.chat",
+                                    "path": "ai/agent/chat/:code",
+                                    "loader": "Ai/Agent/chatPage",
+                                    "hidden": true
+                                },
+                                {
+                                    "type": "menu",
+                                    "label": "流程执行",
+                                    "label_lang": "ai.flow.chat",
+                                    "name": "ai.flow.chat",
+                                    "path": "ai/flow/chat/:id",
+                                    "loader": "Ai/Flow/executePage",
+                                    "hidden": true
+                                }
+                            ]
+                        },
+                        {
+                            "type": "directory",
+                            "label": "记录管理",
+                            "name": "ai.session.manage",
+                            "path": null,
+                            "hidden": false,
+                            "children": [
+                                {
+                                    "type": "menu",
+                                    "label": "流程记录",
+                                    "label_lang": "ai.flowRun.list",
+                                    "name": "ai.flowRun.list",
+                                    "path": "ai/flowRun",
+                                    "loader": "Ai/FlowRun/table",
+                                    "hidden": false
+                                },
+                                {
+                                    "type": "menu",
+                                    "label": "会话记录",
+                                    "label_lang": "ai.session.list",
+                                    "name": "ai.session.list",
+                                    "path": "ai/session",
+                                    "loader": "Ai/Session/table",
+                                    "hidden": false
+                                },
+                                {
+                                    "type": "menu",
+                                    "label": "调度任务",
+                                    "label_lang": "ai.scheduler.list",
+                                    "name": "ai.scheduler.list",
+                                    "path": "ai/scheduler",
+                                    "loader": "Ai/Scheduler/table",
+                                    "hidden": false
+                                }
+                            ]
+                        },
+                        {
+                            "type": "directory",
+                            "label": "AI 管理",
+                            "label_lang": "ai.manage",
+                            "name": "ai.manage",
+                            "path": "ai/home",
+                            "hidden": false,
+                            "children": [
+                                {
+                                    "type": "menu",
+                                    "label": "工作流",
+                                    "label_lang": "ai.flow.list",
+                                    "name": "ai.flow.list",
+                                    "path": "ai/flow",
+                                    "loader": "Ai/Flow/table",
+                                    "hidden": false,
+                                    "children": [
+                                        {
+                                            "type": "menu",
+                                            "label": "新增流程",
+                                            "label_lang": "ai.flow.create",
+                                            "name": "ai.flow.create",
+                                            "path": "ai/flow/create",
+                                            "loader": "Ai/Flow/page",
+                                            "hidden": true
+                                        },
+                                        {
+                                            "type": "menu",
+                                            "label": "编辑流程",
+                                            "label_lang": "ai.flow.edit",
+                                            "name": "ai.flow.edit",
+                                            "path": "ai/flow/edit/:id",
+                                            "loader": "Ai/Flow/page",
+                                            "hidden": true
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "menu",
+                                    "label": "智能体",
+                                    "label_lang": "ai.agent.list",
+                                    "name": "ai.agent.list",
+                                    "path": "ai/agent",
+                                    "loader": "Ai/Agent/table",
+                                    "hidden": false,
+                                    "children": [
+                                        {
+                                            "type": "menu",
+                                            "label": "新增智能体",
+                                            "label_lang": "ai.agent.create",
+                                            "name": "ai.agent.create",
+                                            "path": "ai/agent/create",
+                                            "loader": "Ai/Agent/form",
+                                            "hidden": true
+                                        },
+                                        {
+                                            "type": "menu",
+                                            "label": "编辑智能体",
+                                            "label_lang": "ai.agent.edit",
+                                            "name": "ai.agent.edit",
+                                            "path": "ai/agent/edit/:id",
+                                            "loader": "Ai/Agent/form",
+                                            "hidden": true
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "type": "directory",
+                            "label": "知识库",
+                            "label_lang": "ai.rag",
+                            "name": "ai.rag",
+                            "path": null,
+                            "loader": null,
+                            "hidden": false,
+                            "children": [
+                                {
+                                    "type": "menu",
+                                    "label": "文档库管理",
+                                    "label_lang": "ai.ragKnowledge.list",
+                                    "name": "ai.ragKnowledge.list",
+                                    "path": "ai/ragKnowledge",
+                                    "loader": "Ai/RagKnowledge/table",
+                                    "hidden": false
+                                },
+                                {
+                                    "type": "menu",
+                                    "label": "文件导入",
+                                    "label_lang": "ai.ragKnowledgeData.import",
+                                    "name": "ai.ragKnowledgeData.import",
+                                    "path": "ai/ragImport",
+                                    "loader": "Ai/RagImport/index",
+                                    "hidden": false
+                                },
+                                {
+                                    "type": "menu",
+                                    "label": "内容管理",
+                                    "label_lang": "ai.ragKnowledgeData.list",
+                                    "name": "ai.ragKnowledgeData.list",
+                                    "path": "ai/ragKnowledgeData",
+                                    "loader": "Ai/RagKnowledgeData/table",
+                                    "hidden": false
+                                },
+                                {
+                                    "type": "menu",
+                                    "label": "检索测试",
+                                    "label_lang": "ai.ragKnowledge.queryDocs",
+                                    "name": "ai.ragKnowledge.queryDocs",
+                                    "path": "ai/ragTest",
+                                    "loader": "Ai/RagTest/index",
+                                    "hidden": false
+                                }
+                            ]
+                        },
+                        {
+                            "type": "directory",
+                            "label": "AI 配置",
+                            "label_lang": "ai.config",
+                            "name": "ai.config",
+                            "path": null,
+                            "loader": null,
+                            "hidden": false,
+                            "children": [
+                                {
+                                    "type": "menu",
+                                    "label": "OpenAPI 密钥",
+                                    "label_lang": "ai.token.list",
+                                    "name": "ai.token.list",
+                                    "path": "ai/token",
+                                    "loader": "Ai/Token/table",
+                                    "hidden": false
+                                },
+                                {
+                                    "type": "menu",
+                                    "label": "服务商配置",
+                                    "label_lang": "ai.provider.list",
+                                    "name": "ai.provider.list",
+                                    "path": "ai/provider",
+                                    "loader": "Ai/Provider/table",
+                                    "hidden": false
+                                },
+                                {
+                                    "type": "menu",
+                                    "label": "模型管理",
+                                    "label_lang": "ai.model.list",
+                                    "name": "ai.model.list",
+                                    "path": "ai/model",
+                                    "loader": "Ai/Model/table",
+                                    "hidden": false
+                                },
+                                {
+                                    "type": "menu",
+                                    "label": "技能管理",
+                                    "label_lang": "ai.skill.list",
+                                    "name": "ai.skill.list",
+                                    "path": "ai/skill",
+                                    "loader": "Ai/Skill/table",
+                                    "hidden": false
+                                },
+                                {
+                                    "type": "menu",
+                                    "label": "解析配置",
+                                    "label_lang": "ai.parseProvider.list",
+                                    "name": "ai.parseProvider.list",
+                                    "path": "ai/parseProvider",
+                                    "loader": "Ai/ParseProvider/table",
+                                    "hidden": false
+                                },
+                                {
+                                    "type": "menu",
+                                    "label": "向量库配置",
+                                    "label_lang": "ai.vector.list",
+                                    "name": "ai.vector.list",
+                                    "path": "ai/vector",
+                                    "loader": "Ai/Vector/table",
+                                    "hidden": false
+                                },
+                                {
+                                    "type": "menu",
+                                    "label": "知识库配置",
+                                    "label_lang": "ai.ragProvider.list",
+                                    "name": "ai.ragProvider.list",
+                                    "path": "ai/ragProvider",
+                                    "loader": "Ai/RagProvider/table",
+                                    "hidden": false
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "app": "ai"
         }
     ]
 }

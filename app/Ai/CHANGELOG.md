@@ -8,6 +8,11 @@ All notable changes to this project will be documented in this file.
 
 
 
+
+## [0.2.4] - 2026-03-25
+
+- fix: 文件解析驱动 bug
+
 ## [0.2.3] - 2026-03-20
 
 - fix: 更新适配最新 ai 依赖
