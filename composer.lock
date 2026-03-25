@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "acd2367b8c83de8ea1b7e551778cc630",
+    "content-hash": "828818336cef6f8e23dbf95deaf8463d",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -7315,6 +7315,58 @@
                 "source": "https://github.com/symfony/process/tree/v7.4.5"
             },
             "time": "2026-01-26T15:07:59+00:00"
+        },
+        {
+            "name": "symfony/redis-messenger",
+            "version": "v8.0.6",
+            "dist": {
+                "type": "zip",
+                "url": "https://mirrors.tencent.com/repository/composer/symfony/redis-messenger/v8.0.6/symfony-redis-messenger-v8.0.6.zip",
+                "reference": "706bbc32a8e061af1671c751f3e987bc5df4009b",
+                "shasum": ""
+            },
+            "require": {
+                "ext-redis": "*",
+                "php": ">=8.4",
+                "symfony/messenger": "^7.4|^8.0"
+            },
+            "conflict": {
+                "ext-redis": "<6.1",
+                "ext-relay": "<0.12"
+            },
+            "require-dev": {
+                "symfony/property-access": "^7.4|^8.0",
+                "symfony/serializer": "^7.4|^8.0",
+                "symfony/var-dumper": "^7.4|^8.0"
+            },
+            "type": "symfony-messenger-bridge",
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\Messenger\\Bridge\\Redis\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony Redis extension Messenger Bridge",
+            "homepage": "https://symfony.com",
+            "support": {
+                "source": "https://github.com/symfony/redis-messenger/tree/v8.0.6"
+            },
+            "time": "2026-02-14T18:07:45+00:00"
         },
         {
             "name": "symfony/service-contracts",

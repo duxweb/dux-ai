@@ -34,7 +34,8 @@
         "spatie/pdf-to-image": "^3.2",
         "php-ffmpeg/php-ffmpeg": "^1.4",
         "duxweb/dux-lite-runtime": "^0.1.0",
-        "ramsey/uuid": "^4.9.2"
+        "ramsey/uuid": "^4.9.2",
+        "symfony/redis-messenger": "^8.0"
     },
     "require-dev": {
         "pestphp/pest": "*"
