@@ -19,12 +19,35 @@ class Menu
         $newMenus = array_filter($menuData, function ($menu) use ($existingMenus) {
             return !in_array($menu['name'], $existingMenus);
         });
+        $existsMenus = array_filter($menuData, function ($menu) use ($existingMenus) {
+            return in_array($menu['name'], $existingMenus);
+        });
 
         if (!empty($newMenus)) {
             usort($newMenus, function ($a, $b) {
                 return $a['id'] <=> $b['id'];
             });
             $db->table('system_menu')->insert($newMenus);
+        }
+
+        foreach ($existsMenus as $item) {
+            $db->table('system_menu')
+                ->where('app', $app)
+                ->where('name', $item['name'])
+                ->update([
+                    'parent_id' => $item['parent_id'],
+                    'label' => $item['label'],
+                    'label_lang' => $item['label_lang'],
+                    'path' => $item['path'],
+                    'icon' => $item['icon'],
+                    'loader' => $item['loader'],
+                    'type' => $item['type'],
+                    'url' => $item['url'],
+                    'buttons' => $item['buttons'],
+                    'hidden' => $item['hidden'],
+                    '_lft' => $item['_lft'],
+                    '_rgt' => $item['_rgt'],
+                ]);
         }
 
         SystemMenu::scoped(['app' => $app])->fixTree();

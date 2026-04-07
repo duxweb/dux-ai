@@ -2,9 +2,15 @@
 
 use App\Ai\Models\AiAgentApproval;
 use App\Ai\Service\AgentApproval\ApprovalPersistenceStore;
+use App\Ai\Service\Neuron\Agent\AgentToolExecutor;
 use App\Ai\Service\Neuron\Flow\Interrupt\AsyncWaitInterruptRequest;
 use Core\App;
 use Illuminate\Database\Schema\Blueprint;
+use NeuronAI\Agent\Events\AIInferenceEvent;
+use NeuronAI\Agent\Events\ToolCallEvent;
+use NeuronAI\Agent\Nodes\ToolNode;
+use NeuronAI\Chat\Messages\ToolCallMessage;
+use NeuronAI\Tools\Tool;
 use NeuronAI\Workflow\Events\StopEvent;
 use NeuronAI\Workflow\Interrupt\WorkflowInterrupt;
 use NeuronAI\Workflow\WorkflowState;
@@ -51,12 +57,7 @@ it('审批持久化：delete 只清空 interrupt，不删除审批记录', funct
 
     $interrupt = new WorkflowInterrupt(
         new AsyncWaitInterruptRequest('审批等待', ['x' => 1]),
-        new class extends \NeuronAI\Workflow\Node {
-            public function __invoke(StopEvent $event, WorkflowState $state): StopEvent
-            {
-                return $event;
-            }
-        },
+        new ToolNode(),
         tap(new WorkflowState(), fn ($state) => $state->set('__workflowId', 'approval_test_1')),
         new StopEvent()
     );
@@ -71,4 +72,43 @@ it('审批持久化：delete 只清空 interrupt，不删除审批记录', funct
     $fresh = AiAgentApproval::query()->find($approval->id);
     expect($fresh)->not->toBeNull()
         ->and($fresh?->status)->toBe('pending');
+});
+
+it('审批持久化：能力配置里存在 handler 闭包时也能序列化恢复', function () {
+    AiAgentApproval::query()->create([
+        'workflow_id' => 'approval_test_closure',
+        'agent_id' => 1,
+        'session_id' => 1,
+        'status' => 'pending',
+        'risk_level' => 'dangerous',
+    ]);
+
+    $tool = Tool::make('desktop_action')
+        ->setCallable(new AgentToolExecutor('desktop_action', [
+            'label' => '桌面动作',
+            'handler' => static fn (array $input): array => $input,
+            'action' => 'screen.capture',
+        ], 1, 1))
+        ->setInputs([
+            'action' => 'screen.capture',
+            'payload' => [],
+        ])
+        ->setCallId('call_desktop_1');
+
+    $message = new ToolCallMessage(null, [$tool]);
+    $event = new ToolCallEvent($message, new AIInferenceEvent('system prompt', [$tool]));
+    $interrupt = new WorkflowInterrupt(
+        new AsyncWaitInterruptRequest('审批等待', ['x' => 1]),
+        new ToolNode(),
+        tap(new WorkflowState(), fn ($state) => $state->set('__workflowId', 'approval_test_closure')),
+        $event
+    );
+
+    $store = ApprovalPersistenceStore::make();
+    $store->save('approval_test_closure', $interrupt);
+
+    $loaded = $store->load('approval_test_closure');
+    expect($loaded)->toBeInstanceOf(WorkflowInterrupt::class)
+        ->and($loaded->getEvent())->toBeInstanceOf(ToolCallEvent::class)
+        ->and($loaded->getEvent()->toolCallMessage->getTools()[0]->getName())->toBe('desktop_action');
 });

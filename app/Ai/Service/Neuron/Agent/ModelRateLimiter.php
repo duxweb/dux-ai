@@ -16,8 +16,9 @@ use Ramsey\Uuid\Uuid;
 final class ModelRateLimiter
 {
     private const CACHE_PREFIX = 'ai.agent.model_budget.';
-    private const WINDOW_SECONDS = 60;
-    private const CACHE_TTL = 180;
+    private const TOKEN_WINDOW_SECONDS = 60;
+    private const ACTIVE_RESERVATION_TTL_SECONDS = 900;
+    private const CACHE_TTL = 1200;
 
     /**
      * @return array{
@@ -25,8 +26,10 @@ final class ModelRateLimiter
      *     model_key: string,
      *     reservation_id: string,
      *     limit: int,
+     *     concurrency_limit: int,
      *     requested_tokens: int,
      *     used_tokens: int,
+     *     active_reservations: int,
      *     waited_ms: int,
      *     forced: bool
      * }
@@ -48,8 +51,10 @@ final class ModelRateLimiter
      *     model_key: string,
      *     reservation_id: string,
      *     limit: int,
+     *     concurrency_limit: int,
      *     requested_tokens: int,
      *     used_tokens: int,
+     *     active_reservations: int,
      *     waited_ms: int,
      *     forced: bool
      * }
@@ -83,6 +88,7 @@ final class ModelRateLimiter
             }
             $state[$index]['tokens'] = $tokens;
             $state[$index]['updated_at'] = microtime(true);
+            $state[$index]['released_at'] = microtime(true);
             self::writeState($modelKey, $state);
             return;
         }
@@ -105,6 +111,34 @@ final class ModelRateLimiter
         ];
     }
 
+    /**
+     * @return array{
+     *     model_key:string,
+     *     model_limit:int,
+     *     global_limit:int,
+     *     effective_limit:int,
+     *     model_concurrency:int,
+     *     global_concurrency:int,
+     *     effective_concurrency:int,
+     *     max_wait_ms:int
+     * }
+     */
+    public static function inspectForModel(AiModel $model): array
+    {
+        $model->loadMissing('provider');
+
+        return [
+            'model_key' => self::modelKey($model),
+            'model_limit' => self::resolveModelTpmLimit($model),
+            'global_limit' => self::normalizeLimitCandidate(AiConfig::getValue('rate_limit.tpm')),
+            'effective_limit' => self::resolveTpmLimit($model),
+            'model_concurrency' => self::resolveModelConcurrencyLimit($model),
+            'global_concurrency' => self::normalizeLimitCandidate(AiConfig::getValue('rate_limit.concurrency')),
+            'effective_concurrency' => self::resolveConcurrencyLimit($model),
+            'max_wait_ms' => self::resolveMaxWaitMs($model),
+        ];
+    }
+
     private static function appendReservation(string $modelKey, array $state, int $tokens): string
     {
         $reservationId = (string)Uuid::uuid7();
@@ -113,6 +147,7 @@ final class ModelRateLimiter
             'tokens' => max(0, $tokens),
             'created_at' => microtime(true),
             'updated_at' => microtime(true),
+            'released_at' => null,
         ];
         self::writeState($modelKey, $state);
         return $reservationId;
@@ -124,8 +159,10 @@ final class ModelRateLimiter
      *     model_key: string,
      *     reservation_id: string,
      *     limit: int,
+     *     concurrency_limit: int,
      *     requested_tokens: int,
      *     used_tokens: int,
+     *     active_reservations: int,
      *     waited_ms: int,
      *     forced: bool
      * }
@@ -133,7 +170,8 @@ final class ModelRateLimiter
     private static function acquireForResolvedModel(AiModel $model, int $requestedTokens, bool $forceOnTimeout): array
     {
         $limit = self::resolveTpmLimit($model);
-        if ($limit <= 0 || $requestedTokens <= 0) {
+        $concurrencyLimit = self::resolveConcurrencyLimit($model);
+        if ($limit <= 0 && $concurrencyLimit <= 0) {
             return self::disabledReservation(self::modelKey($model));
         }
 
@@ -145,21 +183,27 @@ final class ModelRateLimiter
         while (true) {
             $state = self::readState($modelKey);
             $used = self::sumTokens($state);
-            if ($used + $requestedTokens <= $limit) {
+            $activeReservations = self::countActiveReservations($state);
+            $tokenAllowed = $limit <= 0 || $used + max(0, $requestedTokens) <= $limit;
+            $concurrencyAllowed = $concurrencyLimit <= 0 || $activeReservations < $concurrencyLimit;
+
+            if ($tokenAllowed && $concurrencyAllowed) {
                 $reservationId = self::appendReservation($modelKey, $state, $requestedTokens);
                 return [
                     'enabled' => true,
                     'model_key' => $modelKey,
                     'reservation_id' => $reservationId,
                     'limit' => $limit,
+                    'concurrency_limit' => $concurrencyLimit,
                     'requested_tokens' => $requestedTokens,
                     'used_tokens' => $used,
+                    'active_reservations' => $activeReservations,
                     'waited_ms' => $waitedMs,
                     'forced' => false,
                 ];
             }
 
-            $waitMs = self::nextWaitMs($state);
+            $waitMs = self::nextWaitMs($state, !$tokenAllowed, !$concurrencyAllowed);
             if ($waitMs <= 0) {
                 $waitMs = 200;
             }
@@ -175,8 +219,10 @@ final class ModelRateLimiter
                     'model_key' => $modelKey,
                     'reservation_id' => $reservationId,
                     'limit' => $limit,
+                    'concurrency_limit' => $concurrencyLimit,
                     'requested_tokens' => $requestedTokens,
                     'used_tokens' => $used,
+                    'active_reservations' => $activeReservations,
                     'waited_ms' => $waitedMs,
                     'forced' => true,
                 ];
@@ -192,8 +238,13 @@ final class ModelRateLimiter
      */
     private static function sumTokens(array $state): int
     {
+        $cutoff = microtime(true) - self::TOKEN_WINDOW_SECONDS;
         $sum = 0;
         foreach ($state as $item) {
+            $createdAt = (float)($item['created_at'] ?? 0);
+            if ($createdAt <= 0 || $createdAt < $cutoff) {
+                continue;
+            }
             $sum += max(0, (int)($item['tokens'] ?? 0));
         }
         return $sum;
@@ -202,8 +253,34 @@ final class ModelRateLimiter
     /**
      * @param array<int, array<string, mixed>> $state
      */
-    private static function nextWaitMs(array $state): int
+    private static function countActiveReservations(array $state): int
     {
+        $count = 0;
+        foreach ($state as $item) {
+            $releasedAt = (float)($item['released_at'] ?? 0);
+            if ($releasedAt <= 0) {
+                $count++;
+            }
+        }
+
+        return $count;
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $state
+     */
+    private static function nextWaitMs(array $state, bool $tokenBlocked = true, bool $concurrencyBlocked = false): int
+    {
+        $waits = [];
+
+        if ($concurrencyBlocked) {
+            $waits[] = 200;
+        }
+
+        if (!$tokenBlocked) {
+            return min($waits ?: [0]);
+        }
+
         $oldest = null;
         foreach ($state as $item) {
             $createdAt = (float)($item['created_at'] ?? 0);
@@ -216,10 +293,12 @@ final class ModelRateLimiter
         }
 
         if ($oldest === null) {
-            return 0;
+            return min($waits ?: [0]);
         }
 
-        return max(100, (int)ceil((($oldest + self::WINDOW_SECONDS) - microtime(true)) * 1000) + 50);
+        $waits[] = max(100, (int)ceil((($oldest + self::TOKEN_WINDOW_SECONDS) - microtime(true)) * 1000) + 50);
+
+        return min($waits);
     }
 
     /**
@@ -232,14 +311,23 @@ final class ModelRateLimiter
             return [];
         }
 
-        $cutoff = microtime(true) - self::WINDOW_SECONDS;
+        $tokenCutoff = microtime(true) - self::TOKEN_WINDOW_SECONDS;
+        $activeCutoff = microtime(true) - self::ACTIVE_RESERVATION_TTL_SECONDS;
         $resolved = [];
         foreach ($items as $item) {
             if (!is_array($item)) {
                 continue;
             }
             $createdAt = (float)($item['created_at'] ?? 0);
-            if ($createdAt <= 0 || $createdAt < $cutoff) {
+            if ($createdAt <= 0) {
+                continue;
+            }
+            $releasedAt = (float)($item['released_at'] ?? 0);
+            $active = $releasedAt <= 0;
+            if ($active && $createdAt < $activeCutoff) {
+                continue;
+            }
+            if (!$active && $createdAt < $tokenCutoff) {
                 continue;
             }
             $resolved[] = $item;
@@ -257,24 +345,54 @@ final class ModelRateLimiter
 
     private static function resolveTpmLimit(AiModel $model): int
     {
+        $modelLimit = self::resolveModelTpmLimit($model);
+        $globalLimit = self::normalizeLimitCandidate(AiConfig::getValue('rate_limit.tpm'));
+
+        if ($modelLimit > 0 && $globalLimit > 0) {
+            return min($modelLimit, $globalLimit);
+        }
+
+        return max($modelLimit, $globalLimit);
+    }
+
+    private static function resolveConcurrencyLimit(AiModel $model): int
+    {
+        $modelLimit = self::resolveModelConcurrencyLimit($model);
+        $globalLimit = self::normalizeLimitCandidate(AiConfig::getValue('rate_limit.concurrency'));
+
+        if ($modelLimit > 0 && $globalLimit > 0) {
+            return min($modelLimit, $globalLimit);
+        }
+
+        return max($modelLimit, $globalLimit);
+    }
+
+    private static function resolveModelTpmLimit(AiModel $model): int
+    {
         $options = is_array($model->options ?? null) ? ($model->options ?? []) : [];
         $rateLimit = is_array($options['rate_limit'] ?? null) ? ($options['rate_limit'] ?? []) : [];
 
-        $candidates = [
-            $rateLimit['tpm'] ?? null,
-            $rateLimit['tokens_per_minute'] ?? null,
-            $options['tpm'] ?? null,
-            $options['tokens_per_minute'] ?? null,
-            AiConfig::getValue('rate_limit.tpm'),
-        ];
+        return self::normalizeLimitCandidate(
+            $rateLimit['tpm']
+            ?? $rateLimit['tokens_per_minute']
+            ?? $options['tpm']
+            ?? $options['tokens_per_minute']
+            ?? null
+        );
+    }
 
-        foreach ($candidates as $candidate) {
-            if (is_numeric($candidate)) {
-                return max(0, (int)$candidate);
-            }
-        }
+    private static function resolveModelConcurrencyLimit(AiModel $model): int
+    {
+        $options = is_array($model->options ?? null) ? ($model->options ?? []) : [];
+        $rateLimit = is_array($options['rate_limit'] ?? null) ? ($options['rate_limit'] ?? []) : [];
 
-        return 0;
+        return self::normalizeLimitCandidate(
+            $rateLimit['concurrency']
+            ?? $rateLimit['parallel']
+            ?? $options['concurrency']
+            ?? $options['parallel']
+            ?? null
+        );
     }
 
     private static function resolveMaxWaitMs(AiModel $model): int
@@ -288,6 +406,15 @@ final class ModelRateLimiter
             return 8000;
         }
         return max(0, min(60000, (int)$candidate));
+    }
+
+    private static function normalizeLimitCandidate(mixed $candidate): int
+    {
+        if (!is_numeric($candidate)) {
+            return 0;
+        }
+
+        return max(0, (int)$candidate);
     }
 
     private static function modelKey(AiModel $model): string
@@ -312,8 +439,10 @@ final class ModelRateLimiter
      *     model_key: string,
      *     reservation_id: string,
      *     limit: int,
+     *     concurrency_limit: int,
      *     requested_tokens: int,
      *     used_tokens: int,
+     *     active_reservations: int,
      *     waited_ms: int,
      *     forced: bool
      * }
@@ -325,8 +454,10 @@ final class ModelRateLimiter
             'model_key' => $modelKey,
             'reservation_id' => '',
             'limit' => 0,
+            'concurrency_limit' => 0,
             'requested_tokens' => 0,
             'used_tokens' => 0,
+            'active_reservations' => 0,
             'waited_ms' => 0,
             'forced' => false,
         ];

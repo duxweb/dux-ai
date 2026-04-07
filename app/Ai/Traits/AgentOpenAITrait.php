@@ -318,8 +318,8 @@ trait AgentOpenAITrait
             $sessionId = (int)($args['id'] ?? 0);
             $session = SessionGuard::resolve($tokenAgents, $sessionId, $this->agentUserType, $this->agentUserId);
             $params = $request->getQueryParams();
-            $limit = isset($params['limit']) ? (int)$params['limit'] : 50;
-            $limit = max(1, min(200, $limit));
+            $limit = isset($params['limit']) ? (int)$params['limit'] : 0;
+            $limit = $limit <= 0 ? 0 : min(200, $limit);
             $afterId = isset($params['after_id']) ? (int)$params['after_id'] : 0;
             $afterId = max(0, $afterId);
             $messages = AgentService::listMessages($session->id, $limit, $afterId);

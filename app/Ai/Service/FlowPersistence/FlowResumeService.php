@@ -36,6 +36,7 @@ final class FlowResumeService
         $job = AiSchedulerService::createJob([
             'callback_type' => 'flow',
             'callback_code' => 'resume_poll',
+            'callback_name' => '流程恢复轮询',
             'callback_action' => 'poll',
             'workflow_id' => $workflowId,
             'dedupe_key' => sprintf('flow:resume_poll:%s:%s', $workflowId, (string)($currentNode['id'] ?? 'node')),

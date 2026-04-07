@@ -4,8 +4,8 @@ import { DuxModalPage } from '@duxweb/dvha-pro'
 import { marked } from 'marked'
 import { NEmpty, NImage, NSpin, NTag, useMessage } from 'naive-ui'
 import { computed, onMounted, ref } from 'vue'
-import { stringifyContent } from '../Agent/chatMessageMedia'
 import { mapOpenAiUiMessages } from '../Agent/chatMessageMapper'
+import { stringifyContent } from '../Agent/chatMessageMedia'
 
 interface ChatMessage {
   role: 'user' | 'assistant' | 'system' | 'tool'
@@ -59,7 +59,7 @@ async function loadMessages() {
     const res = await request.mutateAsync({
       path: `ai/agent/chat/${encodeURIComponent(props.agentCode)}/sessions/${props.sessionId}/messages`,
       method: 'GET',
-      query: { limit: 200 },
+      query: { limit: 0 },
     })
     const list = Array.isArray(res?.data) ? res.data : (Array.isArray(res?.data?.data) ? res.data.data : [])
     messages.value = mapOpenAiUiMessages(list, { filterToolCallPlaceholder: true }) as ChatMessage[]
@@ -138,39 +138,39 @@ onMounted(loadMessages)
                     ? 'bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-tl-sm'
                     : 'bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/40 rounded-tl-sm'"
               >
-                      <div v-if="Array.isArray(msg.meta?.card) && msg.meta?.card?.length" class="space-y-3">
-                        <div
-                          v-for="(card, cidx) in msg.meta.card"
-                          :key="`card-${cidx}`"
-                          class="flex flex-col gap-2 max-w-[230px]"
-                        >
-                          <div class="flex gap-2">
-                            <div v-if="card.image" class="flex-none">
-                              <NImage :src="card.image" width="80" height="80" class="max-h-48 max-w-full object-cover" object-fit="cover" />
-                            </div>
-                            <div class="flex-1 min-w-0">
-                              <div v-if="card.title" class="text-sm font-semibold line-clamp-2">
-                                {{ card.title }}
-                              </div>
-                              <div v-if="card.desc" class="text-xs mt-1">
-                                {{ card.desc }}
-                              </div>
-                            </div>
-                          </div>
+                <div v-if="Array.isArray(msg.meta?.card) && msg.meta?.card?.length" class="space-y-3">
+                  <div
+                    v-for="(card, cidx) in msg.meta.card"
+                    :key="`card-${cidx}`"
+                    class="flex flex-col gap-2 max-w-[230px]"
+                  >
+                    <div class="flex gap-2">
+                      <div v-if="card.image" class="flex-none">
+                        <NImage :src="card.image" width="80" height="80" class="max-h-48 max-w-full object-cover" object-fit="cover" />
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <div v-if="card.title" class="text-sm font-semibold line-clamp-2">
+                          {{ card.title }}
+                        </div>
+                        <div v-if="card.desc" class="text-xs mt-1">
+                          {{ card.desc }}
                         </div>
                       </div>
-                      <div
-                        v-else
-                        class="prose prose-sm max-w-none prose-p:my-1.5"
-                        :class="msg.role === 'user'
-                          ? 'text-white prose-p:leading-relaxed'
-                          : msg.role === 'assistant'
-                            ? 'text-default'
-                            : msg.role === 'tool'
-                              ? 'text-warning'
-                              : 'text-default'"
-                        v-html="renderMessageContent(msg)"
-                      />
+                    </div>
+                  </div>
+                </div>
+                <div
+                  v-else
+                  class="prose prose-sm max-w-none prose-p:my-1.5"
+                  :class="msg.role === 'user'
+                    ? 'text-white prose-p:leading-relaxed'
+                    : msg.role === 'assistant'
+                      ? 'text-default'
+                      : msg.role === 'tool'
+                        ? 'text-warning'
+                        : 'text-default'"
+                  v-html="renderMessageContent(msg)"
+                />
 
                 <div v-if="Array.isArray(msg.meta?.images) && msg.meta?.images?.length" class="grid grid-cols-2 gap-2 mt-3">
                   <img
@@ -179,7 +179,7 @@ onMounted(loadMessages)
                     :src="img?.url || img"
                     object-fit="contain"
                     class="max-w-200px"
-                  />
+                  >
                 </div>
                 <div v-if="Array.isArray(msg.meta?.videos) && msg.meta?.videos?.length" class="space-y-2 mt-3">
                   <video

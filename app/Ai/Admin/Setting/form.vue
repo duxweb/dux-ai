@@ -13,6 +13,7 @@ const model = ref<Record<string, any>>({
   default_rag_provider_id: undefined,
   rate_limit: {
     tpm: undefined,
+    concurrency: undefined,
     max_wait_ms: 8000,
   },
   editor: {
@@ -115,6 +116,9 @@ const model = ref<Record<string, any>>({
         <DuxFormLayout class="px-4" divider label-placement="setting">
           <DuxFormItem label="全局 TPM" description="每分钟允许的总 Token 数。留空或 0 表示仅使用模型自身配置" path="rate_limit.tpm">
             <NInputNumber v-model:value="model.rate_limit.tpm" :min="0" :step="1000" placeholder="例如 3000" />
+          </DuxFormItem>
+          <DuxFormItem label="全局并发数" description="同时允许多少个模型请求在途执行。留空或 0 表示仅使用模型自身配置" path="rate_limit.concurrency">
+            <NInputNumber v-model:value="model.rate_limit.concurrency" :min="0" :step="1" placeholder="例如 2" />
           </DuxFormItem>
           <DuxFormItem label="最大等待时间" description="命中限速后最多等待多久，超时后会强制放行当前请求" path="rate_limit.max_wait_ms">
             <NInputNumber v-model:value="model.rate_limit.max_wait_ms" :min="0" :step="500" placeholder="例如 8000" />

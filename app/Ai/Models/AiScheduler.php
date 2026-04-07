@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Ai\Models;
 
+use App\Ai\Service\AiConfig;
+use App\Ai\Service\Capability;
+use App\Ai\Service\Neuron\Agent\ModelRateLimiter;
 use Core\Database\Attribute\AutoMigrate;
 use Core\Database\Model;
 use Illuminate\Database\Schema\Blueprint;
@@ -25,6 +28,7 @@ class AiScheduler extends Model
         $table->id();
         $table->string('callback_type')->comment('回调类型');
         $table->string('callback_code')->comment('回调编码');
+        $table->string('callback_name')->nullable()->comment('回调名称');
         $table->string('callback_action')->nullable()->comment('回调动作');
         $table->string('workflow_id')->nullable()->comment('流程工作流 ID');
         $table->string('dedupe_key')->unique()->comment('任务幂等键');
@@ -50,10 +54,25 @@ class AiScheduler extends Model
 
     public function transform(): array
     {
+        $schedule = $this->resolveScheduleMeta();
+        $callbackName = $this->resolveCallbackName();
+        $model = $this->resolveRelatedModel();
+        $rateLimit = $model ? ModelRateLimiter::inspectForModel($model) : [
+            'model_key' => '',
+            'model_limit' => 0,
+            'global_limit' => max(0, (int)AiConfig::getValue('rate_limit.tpm', 0)),
+            'effective_limit' => max(0, (int)AiConfig::getValue('rate_limit.tpm', 0)),
+            'model_concurrency' => 0,
+            'global_concurrency' => max(0, (int)AiConfig::getValue('rate_limit.concurrency', 0)),
+            'effective_concurrency' => max(0, (int)AiConfig::getValue('rate_limit.concurrency', 0)),
+            'max_wait_ms' => max(0, (int)AiConfig::getValue('rate_limit.max_wait_ms', 8000)),
+        ];
+
         return [
             'id' => $this->id,
             'callback_type' => (string)$this->callback_type,
             'callback_code' => (string)$this->callback_code,
+            'callback_name' => $callbackName,
             'callback_action' => $this->callback_action ? (string)$this->callback_action : null,
             'workflow_id' => $this->workflow_id ? (string)$this->workflow_id : null,
             'dedupe_key' => (string)$this->dedupe_key,
@@ -66,10 +85,89 @@ class AiScheduler extends Model
             'last_error' => $this->last_error,
             'source_type' => (string)$this->source_type,
             'source_id' => $this->source_id !== null ? (int)$this->source_id : null,
+            'schedule' => $schedule,
+            'schedule_cron' => $schedule['cron'],
+            'schedule_interval_minutes' => $schedule['interval_minutes'],
+            'schedule_recurring' => $schedule['recurring'],
+            'schedule_desc' => $schedule['desc'],
+            'model_id' => $model?->id,
+            'model_name' => $model?->name,
+            'model_code' => $model?->code,
+            'provider_code' => $model?->provider?->code,
+            'rate_limit' => $rateLimit,
             'locked_at' => $this->locked_at?->toDateTimeString(),
             'locked_by' => $this->locked_by,
             'created_at' => $this->created_at?->toDateTimeString(),
             'updated_at' => $this->updated_at?->toDateTimeString(),
         ];
+    }
+
+    private function resolveCallbackName(): string
+    {
+        if ($this->callback_name) {
+            return (string)$this->callback_name;
+        }
+
+        if ((string)$this->callback_type === 'capability') {
+            $capability = Capability::get((string)$this->callback_code);
+            if ($capability) {
+                $label = trim((string)($capability['label'] ?? $capability['name'] ?? ''));
+                if ($label !== '') {
+                    return $label;
+                }
+            }
+        }
+
+        return match ((string)$this->callback_type) {
+            'video' => '视频任务轮询',
+            'flow' => '流程恢复轮询',
+            default => (string)$this->callback_code,
+        };
+    }
+
+    /**
+     * @return array{cron:?string,interval_minutes:int,recurring:bool,desc:string}
+     */
+    private function resolveScheduleMeta(): array
+    {
+        $params = is_array($this->callback_params ?? null) ? ($this->callback_params ?? []) : [];
+        $schedule = is_array($params['__schedule'] ?? null) ? ($params['__schedule'] ?? []) : [];
+        $cron = trim((string)($schedule['cron'] ?? '')) ?: null;
+        $intervalMinutes = max(0, (int)($schedule['interval_minutes'] ?? 0));
+        $recurring = (bool)($schedule['recurring'] ?? false);
+
+        $desc = '单次执行';
+        if ($cron) {
+            $desc = sprintf('Cron: %s', $cron);
+        } elseif ($intervalMinutes > 0) {
+            $desc = sprintf('每 %d 分钟执行', $intervalMinutes);
+        } elseif ($recurring) {
+            $desc = '周期执行';
+        }
+
+        return [
+            'cron' => $cron,
+            'interval_minutes' => $intervalMinutes,
+            'recurring' => $recurring,
+            'desc' => $desc,
+        ];
+    }
+
+    private function resolveRelatedModel(): ?AiModel
+    {
+        $params = is_array($this->callback_params ?? null) ? ($this->callback_params ?? []) : [];
+        $modelId = (int)($params['model_id'] ?? 0);
+        if ($modelId > 0) {
+            return AiModel::query()->with('provider')->find($modelId);
+        }
+
+        if ((string)$this->source_type === 'agent' && $this->source_id) {
+            $session = AiAgentSession::query()->with(['agent.model.provider'])->find((int)$this->source_id);
+            if ($session?->agent?->model) {
+                return $session->agent->model;
+            }
+        }
+
+        return null;
     }
 }

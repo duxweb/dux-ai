@@ -190,10 +190,12 @@ class Model extends Resources
     {
         $source = is_array($value) ? $value : [];
         $tpm = isset($source['tpm']) && is_numeric($source['tpm']) ? (int)$source['tpm'] : 0;
+        $concurrency = isset($source['concurrency']) && is_numeric($source['concurrency']) ? (int)$source['concurrency'] : 0;
         $maxWaitMs = isset($source['max_wait_ms']) && is_numeric($source['max_wait_ms']) ? (int)$source['max_wait_ms'] : 8000;
 
         return [
             'tpm' => $tpm > 0 ? max(1000, min(10000000, $tpm)) : null,
+            'concurrency' => $concurrency > 0 ? max(1, min(1000, $concurrency)) : null,
             'max_wait_ms' => max(0, min(60000, $maxWaitMs)),
         ];
     }

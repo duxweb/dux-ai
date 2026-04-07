@@ -57,7 +57,12 @@ const cancelTask = async (row: Record<string, any>) => {
   }
 }
 
-const canOperate = (row: Record<string, any>) => {
+const canRetry = (row: Record<string, any>) => {
+  const status = String(row?.status || '')
+  return ['pending', 'running', 'retrying', 'failed', 'canceled', 'success'].includes(status)
+}
+
+const canCancel = (row: Record<string, any>) => {
   const status = String(row?.status || '')
   return ['pending', 'running', 'retrying'].includes(status)
 }
@@ -67,10 +72,10 @@ const columns: TableColumn[] = [
   {
     title: '回调',
     key: 'callback_code',
-    minWidth: 220,
+    minWidth: 280,
     render: column.renderMedia({
-      title: row => `${callbackTypeLabel(String(row.callback_type || ''))} / ${row.callback_code || '-'}`,
-      desc: row => callbackActionLabel(String(row?.callback_action || '')),
+      title: row => row?.callback_name || row?.callback_code || '-',
+      desc: row => `${callbackTypeLabel(String(row?.callback_type || ''))} · ${row?.callback_code || '-'} · ${callbackActionLabel(String(row?.callback_action || ''))}`,
     }),
   },
   {
@@ -90,6 +95,12 @@ const columns: TableColumn[] = [
       const info = maps[status] || { label: status || '-', type: 'default' as const }
       return h(NTag, { bordered: false, size: 'small', type: info.type }, { default: () => info.label })
     },
+  },
+  {
+    title: '调度',
+    key: 'schedule_desc',
+    minWidth: 180,
+    render: row => row?.schedule_desc || '-',
   },
   { title: '执行时间', key: 'execute_at', minWidth: 160 },
   { title: '尝试次数', key: 'attempts', width: 100 },
@@ -127,12 +138,12 @@ const columns: TableColumn[] = [
         },
         {
           label: '重试',
-          show: row => canOperate(row || {}),
+          show: row => canRetry(row || {}),
           onClick: row => retryTask(row),
         },
         {
           label: '取消',
-          show: row => canOperate(row || {}),
+          show: row => canCancel(row || {}),
           onClick: row => cancelTask(row),
         },
       ],
@@ -156,7 +167,7 @@ const filterSchema: JsonSchemaNode[] = [
     tag: 'n-input',
     name: 'keyword',
     attrs: {
-      placeholder: '搜索 dedupe_key / 回调编码 / 错误',
+      placeholder: '搜索任务名称 / 编码 / dedupe_key / 错误',
       clearable: true,
       'v-model:value': [filter.value, 'keyword'],
     },

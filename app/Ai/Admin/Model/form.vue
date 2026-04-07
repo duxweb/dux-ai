@@ -24,6 +24,7 @@ const model = ref({
     max_output_tokens: 600,
     rate_limit: {
       tpm: null,
+      concurrency: null,
       max_wait_ms: 8000,
     },
     video_compress: {
@@ -180,6 +181,7 @@ function defaultVideoCompress() {
 function defaultRateLimit() {
   return {
     tpm: null,
+    concurrency: null,
     max_wait_ms: 8000,
   }
 }
@@ -204,9 +206,11 @@ function normalizeRateLimit(value) {
   const defaults = defaultRateLimit()
   const source = value && typeof value === 'object' ? value : {}
   const tpm = normalizeNumber(source.tpm, null)
+  const concurrency = normalizeNumber(source.concurrency, null)
   const maxWaitMs = normalizeNumber(source.max_wait_ms, defaults.max_wait_ms)
   return {
     tpm: tpm && tpm > 0 ? Math.min(10000000, Math.max(1000, tpm)) : null,
+    concurrency: concurrency && concurrency > 0 ? Math.min(1000, Math.max(1, concurrency)) : null,
     max_wait_ms: Math.min(60000, Math.max(0, maxWaitMs || defaults.max_wait_ms)),
   }
 }
@@ -515,6 +519,9 @@ watch(
           </DuxFormItem>
           <DuxFormItem label="TPM 限速" description="每分钟 Token 预算，留空或 0 表示关闭">
             <NInputNumber v-model:value="model.options.rate_limit.tpm" :min="0" :max="10000000" placeholder="例如 30000" class="w-full" />
+          </DuxFormItem>
+          <DuxFormItem label="并发数限速" description="同一模型同时允许多少个请求在途执行，适合按 QPS/并发控制的平台">
+            <NInputNumber v-model:value="model.options.rate_limit.concurrency" :min="0" :max="1000" placeholder="例如 2" class="w-full" />
           </DuxFormItem>
           <DuxFormItem label="最大排队等待(ms)" description="预算不足时最多等待多久，超时后仍会放行并打日志">
             <NInputNumber v-model:value="model.options.rate_limit.max_wait_ms" :min="0" :max="60000" placeholder="默认 8000" class="w-full" />

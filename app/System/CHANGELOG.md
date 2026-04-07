@@ -19,6 +19,11 @@ All notable changes to this project will be documented in this file.
 
 
 
+
+## [0.2.13] - 2026-04-03
+
+- fix: 菜单更新顺序
+
 ## [0.2.12] - 2026-03-25
 
 - feat: 更新最新依赖

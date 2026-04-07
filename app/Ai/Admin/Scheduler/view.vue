@@ -60,6 +60,7 @@ onMounted(loadDetail)
             <NDescriptions label-placement="left" :column="2" size="small" bordered>
               <NDescriptionsItem label="ID">{{ detail?.id || '-' }}</NDescriptionsItem>
               <NDescriptionsItem label="状态">{{ detail?.status || '-' }}</NDescriptionsItem>
+              <NDescriptionsItem label="任务名称">{{ detail?.callback_name || '-' }}</NDescriptionsItem>
               <NDescriptionsItem label="回调类型">
                 {{ callbackTypeLabel(String(detail?.callback_type || '')) }}
                 <span class="text-muted"> ({{ detail?.callback_type || '-' }})</span>
@@ -69,6 +70,9 @@ onMounted(loadDetail)
                 {{ callbackActionLabel(String(detail?.callback_action || '')) }}
                 <span class="text-muted"> ({{ detail?.callback_action || '-' }})</span>
               </NDescriptionsItem>
+              <NDescriptionsItem label="调度方式">{{ detail?.schedule_desc || '-' }}</NDescriptionsItem>
+              <NDescriptionsItem label="Cron">{{ detail?.schedule_cron || '-' }}</NDescriptionsItem>
+              <NDescriptionsItem label="间隔分钟">{{ detail?.schedule_interval_minutes ?? 0 }}</NDescriptionsItem>
               <NDescriptionsItem label="执行时间">{{ detail?.execute_at || '-' }}</NDescriptionsItem>
               <NDescriptionsItem label="尝试次数">{{ detail?.attempts ?? '-' }}</NDescriptionsItem>
               <NDescriptionsItem label="最大重试">{{ detail?.max_attempts ?? '-' }}</NDescriptionsItem>
@@ -77,6 +81,15 @@ onMounted(loadDetail)
                 <span class="text-muted"> ({{ detail?.source_type || '-' }})</span>
               </NDescriptionsItem>
               <NDescriptionsItem label="来源ID">{{ detail?.source_id ?? '-' }}</NDescriptionsItem>
+              <NDescriptionsItem label="模型">{{ detail?.model_name || detail?.model_code || '-' }}</NDescriptionsItem>
+              <NDescriptionsItem label="Provider">{{ detail?.provider_code || '-' }}</NDescriptionsItem>
+              <NDescriptionsItem label="模型 TPM">{{ detail?.rate_limit?.model_limit ?? 0 }}</NDescriptionsItem>
+              <NDescriptionsItem label="全局 TPM">{{ detail?.rate_limit?.global_limit ?? 0 }}</NDescriptionsItem>
+              <NDescriptionsItem label="实际 TPM">{{ detail?.rate_limit?.effective_limit ?? 0 }}</NDescriptionsItem>
+              <NDescriptionsItem label="模型并发">{{ detail?.rate_limit?.model_concurrency ?? 0 }}</NDescriptionsItem>
+              <NDescriptionsItem label="全局并发">{{ detail?.rate_limit?.global_concurrency ?? 0 }}</NDescriptionsItem>
+              <NDescriptionsItem label="实际并发">{{ detail?.rate_limit?.effective_concurrency ?? 0 }}</NDescriptionsItem>
+              <NDescriptionsItem label="最大等待(ms)">{{ detail?.rate_limit?.max_wait_ms ?? 0 }}</NDescriptionsItem>
               <NDescriptionsItem label="去重Key" :span="2">{{ detail?.dedupe_key || '-' }}</NDescriptionsItem>
               <NDescriptionsItem label="最后错误" :span="2">{{ detail?.last_error || '-' }}</NDescriptionsItem>
             </NDescriptions>

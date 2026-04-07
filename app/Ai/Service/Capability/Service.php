@@ -173,6 +173,7 @@ final class Service
         $job = AiSchedulerService::createJob([
             'callback_type' => 'capability',
             'callback_code' => $code,
+            'callback_name' => $capabilityLabel,
             'callback_action' => 'invoke',
             'dedupe_key' => $dedupeKey,
             'status' => 'pending',

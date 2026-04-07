@@ -7,8 +7,8 @@ import { marked } from 'marked'
 import { NButton, NEmpty, NImage, NSpin, NTag, useMessage } from 'naive-ui'
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { extractPartText, normalizeMediaUrl, stringifyContent, tryParseStructuredFromText } from './chatMessageMedia'
 import { mapOpenAiUiMessages } from './chatMessageMapper'
+import { extractPartText, normalizeMediaUrl, stringifyContent, tryParseStructuredFromText } from './chatMessageMedia'
 
 type ChatRole = 'user' | 'assistant' | 'system' | 'tool'
 
@@ -95,8 +95,6 @@ const sessionNotice = ref('')
 const messagePollTimer = ref<number | null>(null)
 const SESSION_BUSY_MESSAGE = '当前会话正在处理中，请等待本轮完成后再发送'
 const MESSAGE_POLL_INTERVAL = 3000
-const MESSAGE_FULL_SYNC_EVERY = 4
-const messagePollCount = ref(0)
 let availableAgentsTask: Promise<void> | null = null
 let bootstrapAgentTask: Promise<void> | null = null
 
@@ -299,14 +297,75 @@ function updateScrollAnchor() {
   stickToBottom.value = distance <= threshold
 }
 
-function scrollToBottomIfNeeded(force = false) {
-  if (force || stickToBottom.value)
+function isNearBottom(threshold = 80) {
+  const el = chatBodyRef.value
+  if (!el)
+    return true
+  const distance = el.scrollHeight - el.scrollTop - el.clientHeight
+  return distance <= threshold
+}
+
+function scrollToBottomIfNeeded(force = false, shouldAuto = stickToBottom.value || isNearBottom()) {
+  if (force || shouldAuto)
     scrollToBottom()
 }
 
+function restoreScrollPosition(snapshot?: { top: number } | null) {
+  if (!snapshot)
+    return
+  requestAnimationFrame(() => {
+    nextTick(() => {
+      const el = chatBodyRef.value
+      if (!el)
+        return
+      const maxTop = Math.max(0, el.scrollHeight - el.clientHeight)
+      const nextTop = Math.min(snapshot.top, maxTop)
+      el.scrollTop = nextTop
+      updateScrollAnchor()
+    })
+  })
+}
+
 function appendMessage(msg: ChatMessage) {
+  const shouldAutoScroll = stickToBottom.value || isNearBottom()
   chatHistory.value.push(msg)
-  scrollToBottomIfNeeded()
+  scrollToBottomIfNeeded(false, shouldAutoScroll)
+}
+
+function messageMediaSignature(items: any[] | undefined) {
+  if (!Array.isArray(items) || !items.length)
+    return ''
+  return items.map((item) => {
+    if (!item)
+      return ''
+    if (typeof item === 'string')
+      return item
+    return String(item.url || item.filename || item.name || item.content || '')
+  }).filter(Boolean).join('|')
+}
+
+function isSameOptimisticUser(localMsg: ChatMessage, incomingMsg: ChatMessage) {
+  if (localMsg.role !== 'user' || incomingMsg.role !== 'user')
+    return false
+  if (!localMsg.meta?.optimistic)
+    return false
+
+  const localText = stringifyContent(localMsg.content).trim()
+  const incomingText = stringifyContent(incomingMsg.content).trim()
+  if (localText !== incomingText)
+    return false
+
+  return messageMediaSignature(localMsg.meta?.images) === messageMediaSignature(incomingMsg.meta?.images)
+    && messageMediaSignature(localMsg.meta?.files) === messageMediaSignature(incomingMsg.meta?.files)
+}
+
+function reconcileOptimisticUsers(incomingMessages: ChatMessage[]) {
+  incomingMessages.forEach((incomingMsg) => {
+    const index = chatHistory.value.findIndex(localMsg => isSameOptimisticUser(localMsg, incomingMsg))
+    if (index !== -1) {
+      chatHistory.value.splice(index, 1)
+    }
+  })
 }
 
 function createLocalMessageId(prefix: string) {
@@ -746,6 +805,14 @@ function removeSession(sessionId?: number | null) {
 async function loadMessages(sessionId: number | null, options: { silent?: boolean } = {}) {
   if (!sessionId)
     return
+  const chatEl = chatBodyRef.value
+  const shouldAutoScroll = stickToBottom.value || isNearBottom()
+  const preserveScroll = Boolean(options.silent && chatEl && !shouldAutoScroll)
+  const scrollSnapshot = preserveScroll && chatEl
+    ? {
+        top: chatEl.scrollTop,
+      }
+    : null
   if (!options.silent)
     messagesLoading.value = true
   if (!options.silent)
@@ -754,6 +821,9 @@ async function loadMessages(sessionId: number | null, options: { silent?: boolea
     const res = await requestClient.mutateAsync({
       path: `${apiBase}/sessions/${sessionId}/messages`,
       method: 'GET',
+      query: {
+        limit: 0,
+      },
     })
     const list = Array.isArray(res?.data) ? res.data : (Array.isArray(res?.data?.data) ? res.data.data : [])
     const mapped = mapOpenAiUiMessages(list, { filterToolCallPlaceholder: true }) as ChatMessage[]
@@ -762,8 +832,10 @@ async function loadMessages(sessionId: number | null, options: { silent?: boolea
     chatHistory.value = mapped
     if (!options.silent)
       scrollToBottomIfNeeded(true)
+    else if (preserveScroll)
+      restoreScrollPosition(scrollSnapshot)
     else if (mapped.length !== 0)
-      scrollToBottomIfNeeded()
+      scrollToBottomIfNeeded(false, shouldAutoScroll)
   }
   catch (err: any) {
     message.error(err?.message || '加载消息失败')
@@ -785,15 +857,11 @@ async function pollMessages() {
   if (!activeSessionId.value || sending.value || messagesLoading.value)
     return
 
-  messagePollCount.value++
-  if (messagePollCount.value % MESSAGE_FULL_SYNC_EVERY === 0) {
+  const afterId = latestMessageId()
+  if (afterId <= 0) {
     await loadMessages(activeSessionId.value, { silent: true })
     return
   }
-
-  const afterId = latestMessageId()
-  if (afterId <= 0)
-    return
 
   try {
     const res = await requestClient.mutateAsync({
@@ -808,8 +876,17 @@ async function pollMessages() {
     const mapped = mapOpenAiUiMessages(list, { filterToolCallPlaceholder: true }) as ChatMessage[]
     if (!mapped.length)
       return
-    chatHistory.value.push(...mapped)
-    scrollToBottomIfNeeded()
+    const shouldAutoScroll = stickToBottom.value || isNearBottom()
+    reconcileOptimisticUsers(mapped)
+    const existingIds = new Set(chatHistory.value.map(msg => Number(msg?.meta?.id || 0)).filter(id => id > 0))
+    const nextMessages = mapped.filter((msg) => {
+      const id = Number(msg?.meta?.id || 0)
+      return id <= 0 || !existingIds.has(id)
+    })
+    if (!nextMessages.length)
+      return
+    chatHistory.value.push(...nextMessages)
+    scrollToBottomIfNeeded(false, shouldAutoScroll)
   }
   catch {
   }
@@ -826,7 +903,6 @@ function startMessagePolling() {
   stopMessagePolling()
   if (!activeSessionId.value)
     return
-  messagePollCount.value = 0
   messagePollTimer.value = window.setInterval(() => {
     void pollMessages()
   }, MESSAGE_POLL_INTERVAL)
@@ -886,6 +962,7 @@ async function handleSend() {
     meta: {
       id: createLocalMessageId('user'),
       created_at: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+      optimistic: true,
       images: pendingImages.value.map(f => ({
         url: f.url,
         filename: f.filename,
@@ -916,6 +993,7 @@ async function handleSend() {
       id: createLocalMessageId('assistant'),
       created_at: dayjs().format('YYYY-MM-DD HH:mm:ss'),
       pending: true,
+      optimistic: true,
     },
   }
 
@@ -992,7 +1070,8 @@ async function handleSend() {
             meta: payload.status.meta && typeof payload.status.meta === 'object' ? payload.status.meta : {},
           }
           if (String(payload.status.code || '') === 'approval_required') {
-            void loadMessages(activeSessionId.value)
+            const targetSessionId = Number(payload?.session_id || activeSessionId.value || 0) || null
+            void loadMessages(targetSessionId, { silent: true })
           }
         }
 
@@ -1072,7 +1151,7 @@ async function handleSend() {
           scrollToBottom()
         }
 
-        if (payload && Object.prototype.hasOwnProperty.call(payload, 'tool_result')) {
+        if (payload && Object.hasOwn(payload, 'tool_result')) {
           const toolResult = payload.tool_result
           const toolText = typeof toolResult === 'string' && toolResult.trim() !== ''
             ? toolResult
@@ -1090,7 +1169,6 @@ async function handleSend() {
           })
           scrollToBottom()
         }
-
       }
       catch {
       }
@@ -1540,7 +1618,7 @@ watch(activeSessionId, (val, prev) => {
                   <div
                     v-for="(msg, index) in chatHistory"
                     :key="msg.meta?.id ?? index"
-                    class="flex gap-2.5 md:gap-3 animate-fade-in"
+                    class="flex items-start gap-2.5 md:gap-3 animate-fade-in"
                     :class="msg.role === 'user' ? 'justify-end' : 'justify-start'"
                   >
                     <!-- 左侧头像 -->
@@ -1717,10 +1795,7 @@ watch(activeSessionId, (val, prev) => {
                             <i class="i-tabler:external-link text-base opacity-50 group-hover/file:opacity-100 transition-opacity flex-none" />
                           </div>
                         </div>
-
                       </div>
-
-                      <!-- 时间戳 -->
                       <div
                         class="text-xs px-3 flex items-center gap-1.5 mt-1"
                         :class="msg.role === 'user' ? 'text-gray-400 justify-end' : 'text-gray-500 dark:text-gray-500'"
@@ -1740,37 +1815,37 @@ watch(activeSessionId, (val, prev) => {
 
                   <div class="h-[200px]" />
                 </div>
-              </div>
 
-              <!-- 空状态 -->
-              <div
-                v-if="!chatHistory.length && !messagesLoading"
-                class="absolute inset-0 flex flex-col items-center justify-center gap-5 text-gray-400"
-              >
-                <div class="relative">
-                  <div class="size-24 rounded-3xl bg-primary flex items-center justify-center shadow-xl shadow-primary/5 backdrop-blur-sm border border-primary/10">
-                    <i class="i-tabler:message-circle text-5xl text-white" />
+                <!-- 空状态 -->
+                <div
+                  v-if="!chatHistory.length && !messagesLoading"
+                  class="absolute inset-0 flex flex-col items-center justify-center gap-5 text-gray-400"
+                >
+                  <div class="relative">
+                    <div class="size-24 rounded-3xl bg-primary flex items-center justify-center shadow-xl shadow-primary/5 backdrop-blur-sm border border-primary/10">
+                      <i class="i-tabler:message-circle text-5xl text-white" />
+                    </div>
+                    <div class="absolute -bottom-2 -right-2 size-10 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center shadow-lg border border-primary/20">
+                      <i class="i-tabler:sparkles text-base text-primary animate-pulse" />
+                    </div>
                   </div>
-                  <div class="absolute -bottom-2 -right-2 size-10 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center shadow-lg border border-primary/20">
-                    <i class="i-tabler:sparkles text-base text-primary animate-pulse" />
+                  <div class="text-center space-y-2">
+                    <div class="text-lg font-semibold text-default">
+                      开始新的对话
+                    </div>
+                    <div class="text-sm text-muted max-w-xs">
+                      发送消息与 AI 助手开始智能对话
+                    </div>
                   </div>
                 </div>
-                <div class="text-center space-y-2">
-                  <div class="text-lg font-semibold text-default">
-                    开始新的对话
-                  </div>
-                  <div class="text-sm text-muted max-w-xs">
-                    发送消息与 AI 助手开始智能对话
-                  </div>
-                </div>
-              </div>
 
-              <!-- 加载状态 -->
-              <div v-if="messagesLoading && !chatHistory.length" class="absolute inset-0 flex items-center justify-center">
-                <div class="text-center space-y-4">
-                  <NSpin size="large" />
-                  <div class="text-sm font-medium text-muted">
-                    加载消息中...
+                <!-- 加载状态 -->
+                <div v-if="messagesLoading && !chatHistory.length" class="absolute inset-0 flex items-center justify-center">
+                  <div class="text-center space-y-4">
+                    <NSpin size="large" />
+                    <div class="text-sm font-medium text-muted">
+                      加载消息中...
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1792,157 +1867,157 @@ watch(activeSessionId, (val, prev) => {
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- 输入区域 -->
-          <div
-            v-if="activeSessionId"
-            class="absolute bottom-0 left-0 right-0 flex justify-center pointer-events-none px-4"
-          >
+            <!-- 输入区域 -->
+            <div
+              v-if="activeSessionId"
+              class="absolute bottom-0 left-0 right-0 flex justify-center pointer-events-none px-4"
+            >
               <div class="w-full max-w-4xl pointer-events-auto">
-              <div v-if="!sending && sessionNotice" class="mb-2 flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50/95 px-3 py-2 text-xs text-amber-700 shadow-sm dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-300">
-                <i class="i-tabler:clock-hour-4 text-sm" />
-                <span>{{ sessionNotice }}</span>
-              </div>
-              <!-- 输入框容器 -->
-              <div class="overflow-hidden bg-white dark:bg-gray-800 border rounded-xl border-gray-200 dark:border-gray-700 shadow-lg shadow-black/5">
-                <!-- 附件预览 -->
-                <div v-if="pendingImages.length || pendingFiles.length" class="flex flex-wrap gap-2 p-4 border-b border-muted dark:border-accented">
-                  <!-- 图片附件 -->
-                  <div
-                    v-for="(img, idx) in pendingImages"
-                    :key="`img-${idx}`"
-                    class="group relative"
-                  >
-                    <div class="relative size-14 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700  shadow-sm hover:shadow transition-all">
-                      <img
-                        :src="img.url"
-                        alt="preview"
-                        class="size-full object-cover"
-                      >
-                      <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <button
-                          class="size-6 rounded-full bg-white/90 hover:bg-white flex items-center justify-center transition-colors"
-                          @click="pendingImages.splice(idx, 1)"
+                <div v-if="!sending && sessionNotice" class="mb-2 flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50/95 px-3 py-2 text-xs text-amber-700 shadow-sm dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-300">
+                  <i class="i-tabler:clock-hour-4 text-sm" />
+                  <span>{{ sessionNotice }}</span>
+                </div>
+                <!-- 输入框容器 -->
+                <div class="overflow-hidden bg-white dark:bg-gray-800 border rounded-xl border-gray-200 dark:border-gray-700 shadow-lg shadow-black/5">
+                  <!-- 附件预览 -->
+                  <div v-if="pendingImages.length || pendingFiles.length" class="flex flex-wrap gap-2 p-4 border-b border-muted dark:border-accented">
+                    <!-- 图片附件 -->
+                    <div
+                      v-for="(img, idx) in pendingImages"
+                      :key="`img-${idx}`"
+                      class="group relative"
+                    >
+                      <div class="relative size-14 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700  shadow-sm hover:shadow transition-all">
+                        <img
+                          :src="img.url"
+                          alt="preview"
+                          class="size-full object-cover"
                         >
-                          <i class="i-tabler:x text-gray-700 text-sm" />
-                        </button>
+                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <button
+                            class="size-6 rounded-full bg-white/90 hover:bg-white flex items-center justify-center transition-colors"
+                            @click="pendingImages.splice(idx, 1)"
+                          >
+                            <i class="i-tabler:x text-gray-700 text-sm" />
+                          </button>
+                        </div>
+                      </div>
+                      <div class="mt-1 text-[10px] text-center text-muted truncate max-w-[56px] md:max-w-[64px]">
+                        {{ img.filename || '图片' }}
                       </div>
                     </div>
-                    <div class="mt-1 text-[10px] text-center text-muted truncate max-w-[56px] md:max-w-[64px]">
-                      {{ img.filename || '图片' }}
+
+                    <!-- 文件附件 -->
+                    <div
+                      v-for="(file, idx) in pendingFiles"
+                      :key="`file-${idx}`"
+                      class="group relative inline-flex items-center gap-2 p-1.5 rounded-lg border border-muted shadow-sm hover:shadow transition-all"
+                    >
+                      <div class="size-8 rounded bg-muted flex items-center justify-center flex-none">
+                        <i class="i-tabler:file-text text-base text-default" />
+                      </div>
+                      <div class="flex-1 min-w-0 pr-1">
+                        <div class="text-xs font-medium text-gray-900 dark:text-gray-100 truncate max-w-[100px] md:max-w-[150px]">
+                          {{ file.filename || '文件' }}
+                        </div>
+                      </div>
+                      <button
+                        class="size-5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-center transition-colors flex-none"
+                        @click="pendingFiles.splice(idx, 1)"
+                      >
+                        <i class="i-tabler:x text-muted text-xs" />
+                      </button>
                     </div>
                   </div>
 
-                  <!-- 文件附件 -->
-                  <div
-                    v-for="(file, idx) in pendingFiles"
-                    :key="`file-${idx}`"
-                    class="group relative inline-flex items-center gap-2 p-1.5 rounded-lg border border-muted shadow-sm hover:shadow transition-all"
-                  >
-                    <div class="size-8 rounded bg-muted flex items-center justify-center flex-none">
-                      <i class="i-tabler:file-text text-base text-default" />
-                    </div>
-                    <div class="flex-1 min-w-0 pr-1">
-                      <div class="text-xs font-medium text-gray-900 dark:text-gray-100 truncate max-w-[100px] md:max-w-[150px]">
-                        {{ file.filename || '文件' }}
+                  <!-- 输入框 -->
+                  <textarea
+                    v-model="inputText"
+                    rows="2"
+                    placeholder="输入消息内容..."
+                    :disabled="!agentCode || sending"
+                    class="w-full px-3 pt-3 text-sm bg-transparent border-none outline-none resize-none text-default placeholder-muted disabled:opacity-50 disabled:cursor-not-allowed"
+                    @keydown="handleInputKeydown"
+                  />
+
+                  <!-- 底部工具栏 -->
+                  <div class="flex items-center justify-between px-3 pb-3">
+                    <input ref="imageInputRef" type="file" accept="image/*" class="hidden" @change="onImageChosen">
+                    <input ref="fileInputRef" type="file" class="hidden" @change="onFileChosen">
+
+                    <!-- 左侧信息 -->
+                    <div class="flex items-center gap-2 text-sm text-muted">
+                      <div v-if="uploading" class="flex items-center gap-1.5 text-xs">
+                        <NSpin :size="14" />
+                        <span class="hidden md:inline">上传中...</span>
+                      </div>
+                      <div v-else class="text-xs text-muted hidden md:block">
+                        Enter 发送，Shift + Enter 换行
                       </div>
                     </div>
-                    <button
-                      class="size-5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-center transition-colors flex-none"
-                      @click="pendingFiles.splice(idx, 1)"
-                    >
-                      <i class="i-tabler:x text-muted text-xs" />
-                    </button>
+
+                    <!-- 右侧按钮组 -->
+                    <div class="flex items-center gap-2">
+                      <!-- 附件按钮 -->
+                      <NButton
+                        :disabled="!agentCode || uploading || !supportImage"
+                        title="上传图片"
+                        circle
+                        secondary
+                        @click="onSelectImage"
+                      >
+                        <template #icon>
+                          <i class="i-tabler:photo text-muted" />
+                        </template>
+                      </NButton>
+
+                      <!-- 文件按钮 -->
+                      <NButton
+                        circle
+                        secondary
+                        :disabled="!agentCode || uploading || !supportFile"
+                        title="上传文件"
+                        @click="onSelectFile"
+                      >
+                        <template #icon>
+                          <i class="i-tabler:file text-muted" />
+                        </template>
+                      </NButton>
+
+                      <!-- 发送按钮 -->
+                      <NButton
+                        circle
+                        secondary
+                        :type="sending || !inputText.trim() || !agentCode ? 'default' : 'primary'"
+                        :disabled="sending || !inputText.trim() || !agentCode"
+                        title="发送消息"
+                        @click="handleSend"
+                      >
+                        <template #icon>
+                          <i v-if="!sending" class="i-tabler:send text-lg" />
+                          <NSpin v-else size="small" />
+                        </template>
+                      </NButton>
+
+                      <!-- 停止按钮 -->
+                      <NButton
+                        v-if="sending"
+                        circle
+                        secondary
+                        type="warning"
+                        title="停止生成"
+                        @click="handleAbort"
+                      >
+                        <template #icon>
+                          <i class="i-tabler:player-stop text-lg" />
+                        </template>
+                      </NButton>
+                    </div>
                   </div>
                 </div>
-
-                <!-- 输入框 -->
-                <textarea
-                  v-model="inputText"
-                  rows="2"
-                  placeholder="输入消息内容..."
-                  :disabled="!agentCode || sending"
-                  class="w-full px-3 pt-3 text-sm bg-transparent border-none outline-none resize-none text-default placeholder-muted disabled:opacity-50 disabled:cursor-not-allowed"
-                  @keydown="handleInputKeydown"
-                />
-
-                <!-- 底部工具栏 -->
-                <div class="flex items-center justify-between px-3 pb-3">
-                  <input ref="imageInputRef" type="file" accept="image/*" class="hidden" @change="onImageChosen">
-                  <input ref="fileInputRef" type="file" class="hidden" @change="onFileChosen">
-
-                  <!-- 左侧信息 -->
-                  <div class="flex items-center gap-2 text-sm text-muted">
-                    <div v-if="uploading" class="flex items-center gap-1.5 text-xs">
-                      <NSpin :size="14" />
-                      <span class="hidden md:inline">上传中...</span>
-                    </div>
-                    <div v-else class="text-xs text-muted hidden md:block">
-                      Enter 发送，Shift + Enter 换行
-                    </div>
-                  </div>
-
-                  <!-- 右侧按钮组 -->
-                  <div class="flex items-center gap-2">
-                    <!-- 附件按钮 -->
-                    <NButton
-                      :disabled="!agentCode || uploading || !supportImage"
-                      title="上传图片"
-                      circle
-                      secondary
-                      @click="onSelectImage"
-                    >
-                      <template #icon>
-                        <i class="i-tabler:photo text-muted" />
-                      </template>
-                    </NButton>
-
-                    <!-- 文件按钮 -->
-                    <NButton
-                      circle
-                      secondary
-                      :disabled="!agentCode || uploading || !supportFile"
-                      title="上传文件"
-                      @click="onSelectFile"
-                    >
-                      <template #icon>
-                        <i class="i-tabler:file text-muted" />
-                      </template>
-                    </NButton>
-
-                    <!-- 发送按钮 -->
-                    <NButton
-                      circle
-                      secondary
-                      :type="sending || !inputText.trim() || !agentCode ? 'default' : 'primary'"
-                      :disabled="sending || !inputText.trim() || !agentCode"
-                      title="发送消息"
-                      @click="handleSend"
-                    >
-                      <template #icon>
-                        <i v-if="!sending" class="i-tabler:send text-lg" />
-                        <NSpin v-else size="small" />
-                      </template>
-                    </NButton>
-
-                    <!-- 停止按钮 -->
-                    <NButton
-                      v-if="sending"
-                      circle
-                      secondary
-                      type="warning"
-                      title="停止生成"
-                      @click="handleAbort"
-                    >
-                      <template #icon>
-                        <i class="i-tabler:player-stop text-lg" />
-                      </template>
-                    </NButton>
-                  </div>
-                </div>
+                <div class="h-4 bg-gradient-to-b from-transparent to-[var(--n-color)] dark:to-gray-950" />
               </div>
-              <div class="h-4 bg-gradient-to-b from-transparent to-[var(--n-color)] dark:to-gray-950" />
             </div>
           </div>
         </div>

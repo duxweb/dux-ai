@@ -56,11 +56,11 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.374.0",
+            "version": "3.376.4",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/aws/aws-sdk-php/3.374.0/aws-aws-sdk-php-3.374.0.zip",
-                "reference": "18525c8cc2a3aa2c1db23ceca5f57c5f8380d9c4",
+                "url": "https://mirrors.tencent.com/repository/composer/aws/aws-sdk-php/3.376.4/aws-aws-sdk-php-3.376.4.zip",
+                "reference": "fe7773b1e069a45aa74e09cdd65219af6039ff6b",
                 "shasum": ""
             },
             "require": {
@@ -141,9 +141,9 @@
             "support": {
                 "forum": "https://github.com/aws/aws-sdk-php/discussions",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.374.0"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.376.4"
             },
-            "time": "2026-03-25T18:05:48+00:00"
+            "time": "2026-04-06T18:18:41+00:00"
         },
         {
             "name": "brick/math",
@@ -307,11 +307,11 @@
         },
         {
             "name": "composer/ca-bundle",
-            "version": "1.5.10",
+            "version": "1.5.11",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/composer/ca-bundle/1.5.10/composer-ca-bundle-1.5.10.zip",
-                "reference": "961a5e4056dd2e4a2eedcac7576075947c28bf63",
+                "url": "https://mirrors.tencent.com/repository/composer/composer/ca-bundle/1.5.11/composer-ca-bundle-1.5.11.zip",
+                "reference": "68ff39175e8e94a4bb1d259407ce51a6a60f09e6",
                 "shasum": ""
             },
             "require": {
@@ -357,17 +357,17 @@
             "support": {
                 "irc": "irc://irc.freenode.org/composer",
                 "issues": "https://github.com/composer/ca-bundle/issues",
-                "source": "https://github.com/composer/ca-bundle/tree/1.5.10"
+                "source": "https://github.com/composer/ca-bundle/tree/1.5.11"
             },
-            "time": "2025-12-08T15:06:51+00:00"
+            "time": "2026-03-30T09:16:10+00:00"
         },
         {
             "name": "composer/class-map-generator",
-            "version": "1.7.1",
+            "version": "1.7.2",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/composer/class-map-generator/1.7.1/composer-class-map-generator-1.7.1.zip",
-                "reference": "8f5fa3cc214230e71f54924bd0197a3bcc705eb1",
+                "url": "https://mirrors.tencent.com/repository/composer/composer/class-map-generator/1.7.2/composer-class-map-generator-1.7.2.zip",
+                "reference": "6a9c2f0970022ab00dc58c07d0685dd712f2231b",
                 "shasum": ""
             },
             "require": {
@@ -410,9 +410,9 @@
             ],
             "support": {
                 "issues": "https://github.com/composer/class-map-generator/issues",
-                "source": "https://github.com/composer/class-map-generator/tree/1.7.1"
+                "source": "https://github.com/composer/class-map-generator/tree/1.7.2"
             },
-            "time": "2025-12-29T13:15:25+00:00"
+            "time": "2026-03-30T15:36:56+00:00"
         },
         {
             "name": "composer/composer",
@@ -788,16 +788,16 @@
         },
         {
             "name": "devium/toml",
-            "version": "1.0.6",
+            "version": "1.1.0",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/devium/toml/1.0.6/devium-toml-1.0.6.zip",
-                "reference": "190882f9d92e88f8031285129ba9df501da899a6",
+                "url": "https://mirrors.tencent.com/repository/composer/devium/toml/1.1.0/devium-toml-1.1.0.zip",
+                "reference": "a20d8cc05b029295217179396d421a579de8bfa5",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
-                "php": ">=8.1",
+                "php": ">=8.2",
                 "php-ds/php-ds": "^1.5",
                 "symfony/polyfill-mbstring": "^1.30"
             },
@@ -830,7 +830,7 @@
                     "email": "vano@devium.me"
                 }
             ],
-            "description": "A PHP encoder/decoder for TOML compatible with specification 1.0.0",
+            "description": "A PHP encoder/decoder for TOML compatible with 1.0.0 and 1.1.0",
             "keywords": [
                 "decode",
                 "encode",
@@ -839,9 +839,9 @@
             ],
             "support": {
                 "issues": "https://github.com/vanodevium/toml/issues",
-                "source": "https://github.com/vanodevium/toml/tree/v1.0.6"
+                "source": "https://github.com/vanodevium/toml/tree/v1.1.0"
             },
-            "time": "2025-04-22T18:10:54+00:00"
+            "time": "2026-04-04T11:56:34+00:00"
         },
         {
             "name": "doctrine/dbal",
@@ -1149,11 +1149,11 @@
         },
         {
             "name": "duxweb/dux-lite",
-            "version": "v2.4.7",
+            "version": "v2.4.9",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/duxweb/dux-lite/v2.4.7/duxweb-dux-lite-v2.4.7.zip",
-                "reference": "2d40f5f23cf9ccb5833f42b86795f7fb0ef3e1a1",
+                "url": "https://mirrors.tencent.com/repository/composer/duxweb/dux-lite/v2.4.9/duxweb-dux-lite-v2.4.9.zip",
+                "reference": "5d84ad9929bcbd45c513ffeae2041e0e357dd8c4",
                 "shasum": ""
             },
             "require": {
@@ -1168,9 +1168,9 @@
                 "fileeye/mimemap": "^2.2",
                 "firebase/php-jwt": "^7.0",
                 "hassankhan/config": "^3.1",
-                "illuminate/database": "^11.30",
-                "illuminate/events": "^11.30",
-                "illuminate/pagination": "^11.30",
+                "illuminate/database": "^12.50",
+                "illuminate/events": "^12.50",
+                "illuminate/pagination": "^12.50",
                 "jimtools/jwt-auth": "^3.0",
                 "kalnoy/nestedset": "^6.0",
                 "latte/latte": "^3.0",
@@ -1237,7 +1237,7 @@
                 "issues": "https://github.com/duxweb/dux-lite/issues",
                 "source": "https://github.com/duxweb/dux-lite"
             },
-            "time": "2026-03-23T04:16:07+00:00"
+            "time": "2026-04-03T07:07:00+00:00"
         },
         {
             "name": "duxweb/dux-lite-cloud",
@@ -1577,11 +1577,11 @@
         },
         {
             "name": "firebase/php-jwt",
-            "version": "v7.0.3",
+            "version": "v7.0.5",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/firebase/php-jwt/v7.0.3/firebase-php-jwt-v7.0.3.zip",
-                "reference": "28aa0694bcfdfa5e2959c394d5a1ee7a5083629e",
+                "url": "https://mirrors.tencent.com/repository/composer/firebase/php-jwt/v7.0.5/firebase-php-jwt-v7.0.5.zip",
+                "reference": "47ad26bab5e7c70ae8a6f08ed25ff83631121380",
                 "shasum": ""
             },
             "require": {
@@ -1589,6 +1589,7 @@
             },
             "require-dev": {
                 "guzzlehttp/guzzle": "^7.4",
+                "phpfastcache/phpfastcache": "^9.2",
                 "phpspec/prophecy-phpunit": "^2.0",
                 "phpunit/phpunit": "^9.5",
                 "psr/cache": "^2.0||^3.0",
@@ -1628,17 +1629,17 @@
             ],
             "support": {
                 "issues": "https://github.com/firebase/php-jwt/issues",
-                "source": "https://github.com/firebase/php-jwt/tree/v7.0.3"
+                "source": "https://github.com/firebase/php-jwt/tree/v7.0.5"
             },
-            "time": "2026-02-25T22:16:40+00:00"
+            "time": "2026-04-01T20:38:03+00:00"
         },
         {
             "name": "giggsey/libphonenumber-for-php",
-            "version": "9.0.26",
+            "version": "9.0.27",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/giggsey/libphonenumber-for-php/9.0.26/giggsey-libphonenumber-for-php-9.0.26.zip",
-                "reference": "53c2c418d3de20018662158a0c441fbaacc21da6",
+                "url": "https://mirrors.tencent.com/repository/composer/giggsey/libphonenumber-for-php/9.0.27/giggsey-libphonenumber-for-php-9.0.27.zip",
+                "reference": "7973753b3efe38fb57dc949a6014a4d1cfce0ffd",
                 "shasum": ""
             },
             "require": {
@@ -1700,7 +1701,7 @@
                 "issues": "https://github.com/giggsey/libphonenumber-for-php/issues",
                 "source": "https://github.com/giggsey/libphonenumber-for-php"
             },
-            "time": "2026-03-13T10:51:39+00:00"
+            "time": "2026-04-01T12:18:23+00:00"
         },
         {
             "name": "giggsey/locale",
@@ -2179,27 +2180,27 @@
         },
         {
             "name": "illuminate/bus",
-            "version": "v11.50.0",
+            "version": "v12.56.0",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/illuminate/bus/v11.50.0/illuminate-bus-v11.50.0.zip",
-                "reference": "2adf211bada7184410501b37882845230d6bf2f4",
+                "url": "https://mirrors.tencent.com/repository/composer/illuminate/bus/v12.56.0/illuminate-bus-v12.56.0.zip",
+                "reference": "9e70f409c744e0ba6b301fa608bb5b3c8c38669a",
                 "shasum": ""
             },
             "require": {
-                "illuminate/collections": "^11.0",
-                "illuminate/contracts": "^11.0",
-                "illuminate/pipeline": "^11.0",
-                "illuminate/support": "^11.0",
+                "illuminate/collections": "^12.0",
+                "illuminate/contracts": "^12.0",
+                "illuminate/pipeline": "^12.0",
+                "illuminate/support": "^12.0",
                 "php": "^8.2"
             },
             "suggest": {
-                "illuminate/queue": "Required to use closures when chaining jobs (^7.0)."
+                "illuminate/queue": "Required to use closures when chaining jobs (^12.0)."
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "11.x-dev"
+                    "dev-master": "12.x-dev"
                 }
             },
             "autoload": {
@@ -2222,30 +2223,34 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2025-10-14T19:59:30+00:00"
+            "time": "2026-03-09T13:55:34+00:00"
         },
         {
             "name": "illuminate/collections",
-            "version": "v11.50.0",
+            "version": "v12.56.0",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/illuminate/collections/v11.50.0/illuminate-collections-v11.50.0.zip",
-                "reference": "856b1da953e46281ba61d7c82d337072d3ee1825",
+                "url": "https://mirrors.tencent.com/repository/composer/illuminate/collections/v12.56.0/illuminate-collections-v12.56.0.zip",
+                "reference": "83313b009c4afb6f02dbc090bdb67809756eefa2",
                 "shasum": ""
             },
             "require": {
-                "illuminate/conditionable": "^11.0",
-                "illuminate/contracts": "^11.0",
-                "illuminate/macroable": "^11.0",
-                "php": "^8.2"
+                "illuminate/conditionable": "^12.0",
+                "illuminate/contracts": "^12.0",
+                "illuminate/macroable": "^12.0",
+                "php": "^8.2",
+                "symfony/polyfill-php83": "^1.33",
+                "symfony/polyfill-php84": "^1.33",
+                "symfony/polyfill-php85": "^1.33"
             },
             "suggest": {
-                "symfony/var-dumper": "Required to use the dump method (^7.0)."
+                "illuminate/http": "Required to convert collections to API resources (^12.0).",
+                "symfony/var-dumper": "Required to use the dump method (^7.2)."
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "11.x-dev"
+                    "dev-master": "12.x-dev"
                 }
             },
             "autoload": {
@@ -2272,24 +2277,24 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2025-03-24T11:54:20+00:00"
+            "time": "2026-03-11T14:13:25+00:00"
         },
         {
             "name": "illuminate/conditionable",
-            "version": "v11.50.0",
+            "version": "v12.56.0",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/illuminate/conditionable/v11.50.0/illuminate-conditionable-v11.50.0.zip",
-                "reference": "319b717e0587bd7c8a3b44464f0e27867b4bcda9",
+                "url": "https://mirrors.tencent.com/repository/composer/illuminate/conditionable/v12.56.0/illuminate-conditionable-v12.56.0.zip",
+                "reference": "ec677967c1f2faf90b8428919124d2184a4c9b49",
                 "shasum": ""
             },
             "require": {
-                "php": "^8.0.2"
+                "php": "^8.2"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "11.x-dev"
+                    "dev-master": "12.x-dev"
                 }
             },
             "autoload": {
@@ -2312,29 +2317,40 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2025-03-24T11:54:20+00:00"
+            "time": "2025-05-13T15:08:45+00:00"
         },
         {
             "name": "illuminate/container",
-            "version": "v11.50.0",
+            "version": "v12.56.0",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/illuminate/container/v11.50.0/illuminate-container-v11.50.0.zip",
-                "reference": "79bf9149ad7ddd7e14326ebcdd41197d2c4ee36a",
+                "url": "https://mirrors.tencent.com/repository/composer/illuminate/container/v12.56.0/illuminate-container-v12.56.0.zip",
+                "reference": "9abe9dba6b3f5220205ce143069c975a601e4294",
                 "shasum": ""
             },
             "require": {
-                "illuminate/contracts": "^11.0",
+                "illuminate/contracts": "^12.0",
+                "illuminate/reflection": "^12.0",
                 "php": "^8.2",
-                "psr/container": "^1.1.1|^2.0.1"
+                "psr/container": "^1.1.1|^2.0.1",
+                "symfony/polyfill-php84": "^1.33",
+                "symfony/polyfill-php85": "^1.33"
             },
             "provide": {
                 "psr/container-implementation": "1.1|2.0"
             },
+            "suggest": {
+                "illuminate/auth": "Required to use the Auth attribute",
+                "illuminate/cache": "Required to use the Cache attribute",
+                "illuminate/config": "Required to use the Config attribute",
+                "illuminate/database": "Required to use the DB attribute",
+                "illuminate/filesystem": "Required to use the Storage attribute",
+                "illuminate/log": "Required to use the Log or Context attributes"
+            },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "11.x-dev"
+                    "dev-master": "12.x-dev"
                 }
             },
             "autoload": {
@@ -2357,15 +2373,15 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2025-03-24T11:54:20+00:00"
+            "time": "2026-03-16T14:05:01+00:00"
         },
         {
             "name": "illuminate/contracts",
-            "version": "v11.50.0",
+            "version": "v12.56.0",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/illuminate/contracts/v11.50.0/illuminate-contracts-v11.50.0.zip",
-                "reference": "4787042340aae19a7ea0fa82f4073c4826204a48",
+                "url": "https://mirrors.tencent.com/repository/composer/illuminate/contracts/v12.56.0/illuminate-contracts-v12.56.0.zip",
+                "reference": "099fd9b56ccaf776facaa27699b960a3f2451127",
                 "shasum": ""
             },
             "require": {
@@ -2376,7 +2392,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "11.x-dev"
+                    "dev-master": "12.x-dev"
                 }
             },
             "autoload": {
@@ -2399,41 +2415,44 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2025-11-27T16:16:07+00:00"
+            "time": "2026-02-20T14:37:40+00:00"
         },
         {
             "name": "illuminate/database",
-            "version": "v11.50.0",
+            "version": "v12.56.0",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/illuminate/database/v11.50.0/illuminate-database-v11.50.0.zip",
-                "reference": "a0dd90cb4982f887fe3b5580bc5f10cd4997512c",
+                "url": "https://mirrors.tencent.com/repository/composer/illuminate/database/v12.56.0/illuminate-database-v12.56.0.zip",
+                "reference": "60b2fbfb73cc9bd0cb1c27234ee397b0e2ebbadb",
                 "shasum": ""
             },
             "require": {
-                "brick/math": "^0.9.3|^0.10.2|^0.11|^0.12|^0.13|^0.14",
+                "brick/math": "^0.11|^0.12|^0.13|^0.14",
                 "ext-pdo": "*",
-                "illuminate/collections": "^11.0",
-                "illuminate/container": "^11.0",
-                "illuminate/contracts": "^11.0",
-                "illuminate/macroable": "^11.0",
-                "illuminate/support": "^11.0",
+                "illuminate/collections": "^12.0",
+                "illuminate/container": "^12.0",
+                "illuminate/contracts": "^12.0",
+                "illuminate/macroable": "^12.0",
+                "illuminate/support": "^12.0",
                 "laravel/serializable-closure": "^1.3|^2.0",
-                "php": "^8.2"
+                "php": "^8.2",
+                "symfony/polyfill-php83": "^1.33",
+                "symfony/polyfill-php85": "^1.33"
             },
             "suggest": {
                 "ext-filter": "Required to use the Postgres database driver.",
                 "fakerphp/faker": "Required to use the eloquent factory builder (^1.24).",
-                "illuminate/console": "Required to use the database commands (^11.0).",
-                "illuminate/events": "Required to use the observers with Eloquent (^11.0).",
-                "illuminate/filesystem": "Required to use the migrations (^11.0).",
-                "illuminate/pagination": "Required to paginate the result set (^11.0).",
-                "symfony/finder": "Required to use Eloquent model factories (^7.0)."
+                "illuminate/console": "Required to use the database commands (^12.0).",
+                "illuminate/events": "Required to use the observers with Eloquent (^12.0).",
+                "illuminate/filesystem": "Required to use the migrations (^12.0).",
+                "illuminate/http": "Required to convert Eloquent models to API resources (^12.0).",
+                "illuminate/pagination": "Required to paginate the result set (^12.0).",
+                "symfony/finder": "Required to use Eloquent model factories (^7.2)."
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "11.x-dev"
+                    "dev-master": "12.x-dev"
                 }
             },
             "autoload": {
@@ -2462,30 +2481,30 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2026-02-23T15:40:51+00:00"
+            "time": "2026-03-17T13:42:04+00:00"
         },
         {
             "name": "illuminate/events",
-            "version": "v11.50.0",
+            "version": "v12.56.0",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/illuminate/events/v11.50.0/illuminate-events-v11.50.0.zip",
-                "reference": "b72dab66d8e05d22dc5aa949efec150bbc73e827",
+                "url": "https://mirrors.tencent.com/repository/composer/illuminate/events/v12.56.0/illuminate-events-v12.56.0.zip",
+                "reference": "ff22aa6017bdbd90ace660f50638ed9c580ba555",
                 "shasum": ""
             },
             "require": {
-                "illuminate/bus": "^11.0",
-                "illuminate/collections": "^11.0",
-                "illuminate/container": "^11.0",
-                "illuminate/contracts": "^11.0",
-                "illuminate/macroable": "^11.0",
-                "illuminate/support": "^11.0",
+                "illuminate/bus": "^12.0",
+                "illuminate/collections": "^12.0",
+                "illuminate/container": "^12.0",
+                "illuminate/contracts": "^12.0",
+                "illuminate/macroable": "^12.0",
+                "illuminate/support": "^12.0",
                 "php": "^8.2"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "11.x-dev"
+                    "dev-master": "12.x-dev"
                 }
             },
             "autoload": {
@@ -2511,15 +2530,15 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2025-03-24T11:54:20+00:00"
+            "time": "2026-03-05T16:20:14+00:00"
         },
         {
             "name": "illuminate/macroable",
-            "version": "v11.50.0",
+            "version": "v12.56.0",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/illuminate/macroable/v11.50.0/illuminate-macroable-v11.50.0.zip",
-                "reference": "e1cb9e51b9ed5d3c9bc1ab431d0a52fe42a990ed",
+                "url": "https://mirrors.tencent.com/repository/composer/illuminate/macroable/v12.56.0/illuminate-macroable-v12.56.0.zip",
+                "reference": "e862e5648ee34004fa56046b746f490dfa86c613",
                 "shasum": ""
             },
             "require": {
@@ -2528,7 +2547,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "11.x-dev"
+                    "dev-master": "12.x-dev"
                 }
             },
             "autoload": {
@@ -2551,28 +2570,28 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2024-06-28T20:10:30+00:00"
+            "time": "2024-07-23T16:31:01+00:00"
         },
         {
             "name": "illuminate/pagination",
-            "version": "v11.50.0",
+            "version": "v12.56.0",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/illuminate/pagination/v11.50.0/illuminate-pagination-v11.50.0.zip",
-                "reference": "2c4970463f7ede55be207fbdc27608b4c4178380",
+                "url": "https://mirrors.tencent.com/repository/composer/illuminate/pagination/v12.56.0/illuminate-pagination-v12.56.0.zip",
+                "reference": "8327d828676654053906a771abf5eea5426354ec",
                 "shasum": ""
             },
             "require": {
                 "ext-filter": "*",
-                "illuminate/collections": "^11.0",
-                "illuminate/contracts": "^11.0",
-                "illuminate/support": "^11.0",
+                "illuminate/collections": "^12.0",
+                "illuminate/contracts": "^12.0",
+                "illuminate/support": "^12.0",
                 "php": "^8.2"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "11.x-dev"
+                    "dev-master": "12.x-dev"
                 }
             },
             "autoload": {
@@ -2595,26 +2614,30 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2025-02-14T15:33:00+00:00"
+            "time": "2026-02-25T15:25:18+00:00"
         },
         {
             "name": "illuminate/pipeline",
-            "version": "v11.50.0",
+            "version": "v12.56.0",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/illuminate/pipeline/v11.50.0/illuminate-pipeline-v11.50.0.zip",
-                "reference": "f73bb7cab13ac8ef91094dc46976f5e992eea127",
+                "url": "https://mirrors.tencent.com/repository/composer/illuminate/pipeline/v12.56.0/illuminate-pipeline-v12.56.0.zip",
+                "reference": "b6a14c20d69a44bf0a6fba664a00d23ca71770ee",
                 "shasum": ""
             },
             "require": {
-                "illuminate/contracts": "^11.0",
-                "illuminate/support": "^11.0",
+                "illuminate/contracts": "^12.0",
+                "illuminate/macroable": "^12.0",
+                "illuminate/support": "^12.0",
                 "php": "^8.2"
+            },
+            "suggest": {
+                "illuminate/database": "Required to use database transactions (^12.0)."
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "11.x-dev"
+                    "dev-master": "12.x-dev"
                 }
             },
             "autoload": {
@@ -2637,15 +2660,60 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2025-03-24T11:54:20+00:00"
+            "time": "2025-08-20T13:36:50+00:00"
+        },
+        {
+            "name": "illuminate/reflection",
+            "version": "v12.56.0",
+            "dist": {
+                "type": "zip",
+                "url": "https://mirrors.tencent.com/repository/composer/illuminate/reflection/v12.56.0/illuminate-reflection-v12.56.0.zip",
+                "reference": "348cf5da9de89b596d7723be6425fb048e2bf4bb",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/collections": "^12.0",
+                "illuminate/contracts": "^12.0",
+                "php": "^8.2"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "12.x-dev"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "helpers.php"
+                ],
+                "psr-4": {
+                    "Illuminate\\Support\\": ""
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Taylor Otwell",
+                    "email": "taylor@laravel.com"
+                }
+            ],
+            "description": "The Illuminate Reflection package.",
+            "homepage": "https://laravel.com",
+            "support": {
+                "issues": "https://github.com/laravel/framework/issues",
+                "source": "https://github.com/laravel/framework"
+            },
+            "time": "2026-02-25T15:25:18+00:00"
         },
         {
             "name": "illuminate/support",
-            "version": "v11.50.0",
+            "version": "v12.56.0",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/illuminate/support/v11.50.0/illuminate-support-v11.50.0.zip",
-                "reference": "11cc8bd46991e277f6af19eb9dee5d4c1f65c7d2",
+                "url": "https://mirrors.tencent.com/repository/composer/illuminate/support/v12.56.0/illuminate-support-v12.56.0.zip",
+                "reference": "cd8a3c5a95501b9ae0828ac785b5af5ffccdca45",
                 "shasum": ""
             },
             "require": {
@@ -2653,12 +2721,15 @@
                 "ext-ctype": "*",
                 "ext-filter": "*",
                 "ext-mbstring": "*",
-                "illuminate/collections": "^11.0",
-                "illuminate/conditionable": "^11.0",
-                "illuminate/contracts": "^11.0",
-                "illuminate/macroable": "^11.0",
-                "nesbot/carbon": "^2.72.6|^3.8.4",
+                "illuminate/collections": "^12.0",
+                "illuminate/conditionable": "^12.0",
+                "illuminate/contracts": "^12.0",
+                "illuminate/macroable": "^12.0",
+                "illuminate/reflection": "^12.0",
+                "nesbot/carbon": "^3.8.4",
                 "php": "^8.2",
+                "symfony/polyfill-php83": "^1.33",
+                "symfony/polyfill-php85": "^1.33",
                 "voku/portable-ascii": "^2.0.2"
             },
             "conflict": {
@@ -2668,20 +2739,20 @@
                 "spatie/once": "*"
             },
             "suggest": {
-                "illuminate/filesystem": "Required to use the Composer class (^11.0).",
+                "illuminate/filesystem": "Required to use the Composer class (^12.0).",
                 "laravel/serializable-closure": "Required to use the once function (^1.3|^2.0).",
                 "league/commonmark": "Required to use Str::markdown() and Stringable::markdown() (^2.7).",
                 "league/uri": "Required to use the Uri class (^7.5.1).",
                 "ramsey/uuid": "Required to use Str::uuid() (^4.7).",
-                "symfony/process": "Required to use the Composer class (^7.0).",
-                "symfony/uid": "Required to use Str::ulid() (^7.0).",
-                "symfony/var-dumper": "Required to use the dd function (^7.0).",
+                "symfony/process": "Required to use the Composer class (^7.2).",
+                "symfony/uid": "Required to use Str::ulid() (^7.2).",
+                "symfony/var-dumper": "Required to use the dd function (^7.2).",
                 "vlucas/phpdotenv": "Required to use the Env class and env helper (^5.6.1)."
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "11.x-dev"
+                    "dev-master": "12.x-dev"
                 }
             },
             "autoload": {
@@ -2708,15 +2779,15 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2026-01-20T15:25:35+00:00"
+            "time": "2026-03-17T13:55:49+00:00"
         },
         {
             "name": "inspector-apm/inspector-php",
-            "version": "3.16.15",
+            "version": "3.16.16",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/inspector-apm/inspector-php/3.16.15/inspector-apm-inspector-php-3.16.15.zip",
-                "reference": "38e76f5f6883745094d641f86a09001a1d7b5eea",
+                "url": "https://mirrors.tencent.com/repository/composer/inspector-apm/inspector-php/3.16.16/inspector-apm-inspector-php-3.16.16.zip",
+                "reference": "1ae543cc6953da0f68ed4ac810de36696e91438e",
                 "shasum": ""
             },
             "require": {
@@ -2762,9 +2833,9 @@
             ],
             "support": {
                 "issues": "https://github.com/inspector-apm/inspector-php/issues",
-                "source": "https://github.com/inspector-apm/inspector-php/tree/3.16.15"
+                "source": "https://github.com/inspector-apm/inspector-php/tree/3.16.16"
             },
-            "time": "2026-02-26T11:18:52+00:00"
+            "time": "2026-03-26T18:13:38+00:00"
         },
         {
             "name": "intervention/gif",
@@ -2912,18 +2983,18 @@
         },
         {
             "name": "jaybizzle/crawler-detect",
-            "version": "v1.3.7",
+            "version": "v1.3.8",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/jaybizzle/crawler-detect/v1.3.7/jaybizzle-crawler-detect-v1.3.7.zip",
-                "reference": "7f7a45b5d5df9c95ba6b2008544e6cf8e66de6f5",
+                "url": "https://mirrors.tencent.com/repository/composer/jaybizzle/crawler-detect/v1.3.8/jaybizzle-crawler-detect-v1.3.8.zip",
+                "reference": "1882af9b76cb1dbfba3256de2562c3cd383f9b8f",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.1.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^4.8|^5.5|^6.5|^7.5|^8.5|^9.4"
+                "phpunit/phpunit": "^4.8|^5.5|^6.5|^7.5|^8.5.52|^9.4"
             },
             "type": "library",
             "autoload": {
@@ -2952,9 +3023,9 @@
             ],
             "support": {
                 "issues": "https://github.com/JayBizzle/Crawler-Detect/issues",
-                "source": "https://github.com/JayBizzle/Crawler-Detect/tree/v1.3.7"
+                "source": "https://github.com/JayBizzle/Crawler-Detect/tree/v1.3.8"
             },
-            "time": "2026-02-02T19:15:54+00:00"
+            "time": "2026-03-26T23:01:33+00:00"
         },
         {
             "name": "jimtools/jwt-auth",
@@ -3018,11 +3089,11 @@
         },
         {
             "name": "justinrainbow/json-schema",
-            "version": "v6.7.2",
+            "version": "6.8.0",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/justinrainbow/json-schema/v6.7.2/justinrainbow-json-schema-v6.7.2.zip",
-                "reference": "6fea66c7204683af437864e7c4e7abf383d14bc0",
+                "url": "https://mirrors.tencent.com/repository/composer/justinrainbow/json-schema/6.8.0/justinrainbow-json-schema-6.8.0.zip",
+                "reference": "89ac92bcfe5d0a8a4433c7b89d394553ae7250cc",
                 "shasum": ""
             },
             "require": {
@@ -3081,27 +3152,27 @@
             ],
             "support": {
                 "issues": "https://github.com/jsonrainbow/json-schema/issues",
-                "source": "https://github.com/jsonrainbow/json-schema/tree/v6.7.2"
+                "source": "https://github.com/jsonrainbow/json-schema/tree/6.8.0"
             },
-            "time": "2026-02-15T15:06:22+00:00"
+            "time": "2026-04-02T12:43:11+00:00"
         },
         {
             "name": "kalnoy/nestedset",
-            "version": "v6.0.6",
+            "version": "v6.0.8",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/kalnoy/nestedset/v6.0.6/kalnoy-nestedset-v6.0.6.zip",
-                "reference": "3cfc56a9759fb592bc903056166bfc0867f9e679",
+                "url": "https://mirrors.tencent.com/repository/composer/kalnoy/nestedset/v6.0.8/kalnoy-nestedset-v6.0.8.zip",
+                "reference": "65481515cfc1ab310ba083990c9dfa00be014a8b",
                 "shasum": ""
             },
             "require": {
-                "illuminate/database": "^7.0|^8.0|^9.0|^10.0|^11.0|^12.0",
-                "illuminate/events": "^7.0|^8.0|^9.0|^10.0|^11.0|^12.0",
-                "illuminate/support": "^7.0|^8.0|^9.0|^10.0|^11.0|^12.0",
+                "illuminate/database": ">=7.0",
+                "illuminate/events": ">=7.0",
+                "illuminate/support": ">=7.0",
                 "php": "^8.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "7.*|8.*|9.*|^10.5"
+                "phpunit/phpunit": ">=7.0"
             },
             "type": "library",
             "extra": {
@@ -3138,9 +3209,9 @@
             ],
             "support": {
                 "issues": "https://github.com/lazychaser/laravel-nestedset/issues",
-                "source": "https://github.com/lazychaser/laravel-nestedset/tree/v6.0.6"
+                "source": "https://github.com/lazychaser/laravel-nestedset/tree/v6.0.8"
             },
-            "time": "2025-04-22T19:38:02+00:00"
+            "time": "2026-04-02T13:39:25+00:00"
         },
         {
             "name": "laravel/serializable-closure",
@@ -3835,11 +3906,11 @@
         },
         {
             "name": "neuron-core/neuron-ai",
-            "version": "3.2.11",
+            "version": "3.3.0",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/neuron-core/neuron-ai/3.2.11/neuron-core-neuron-ai-3.2.11.zip",
-                "reference": "d56213b85a7cd991e83bcc2f0fc35cdc8ccb8175",
+                "url": "https://mirrors.tencent.com/repository/composer/neuron-core/neuron-ai/3.3.0/neuron-core-neuron-ai-3.3.0.zip",
+                "reference": "5979deeceec74a6fc9a1b969558ea21888430307",
                 "shasum": ""
             },
             "require": {
@@ -3889,9 +3960,9 @@
             "description": "The PHP Agentic Framework.",
             "support": {
                 "issues": "https://github.com/neuron-core/neuron-ai/issues",
-                "source": "https://github.com/neuron-core/neuron-ai/tree/3.2.11"
+                "source": "https://github.com/neuron-core/neuron-ai/tree/3.3.0"
             },
-            "time": "2026-03-23T14:16:11+00:00"
+            "time": "2026-03-30T17:15:12+00:00"
         },
         {
             "name": "nikic/fast-route",
@@ -6040,11 +6111,11 @@
         },
         {
             "name": "spiral/roadrunner",
-            "version": "v2025.1.11",
+            "version": "v2025.1.12",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/spiral/roadrunner/v2025.1.11/spiral-roadrunner-v2025.1.11.zip",
-                "reference": "e2c3615ad42d34cc30e01978c091c6ca51d0a005",
+                "url": "https://mirrors.tencent.com/repository/composer/spiral/roadrunner/v2025.1.12/spiral-roadrunner-v2025.1.12.zip",
+                "reference": "bf2e70e84490b826ade9894bcd02b886acab2e21",
                 "shasum": ""
             },
             "type": "metapackage",
@@ -6071,21 +6142,21 @@
                 "chat": "https://discord.gg/V6EK4he",
                 "docs": "https://docs.roadrunner.dev/",
                 "issues": "https://github.com/roadrunner-server/roadrunner/issues",
-                "source": "https://github.com/roadrunner-server/roadrunner/tree/v2025.1.11"
+                "source": "https://github.com/roadrunner-server/roadrunner/tree/v2025.1.12"
             },
-            "time": "2026-03-16T22:10:18+00:00"
+            "time": "2026-03-30T19:23:10+00:00"
         },
         {
             "name": "staudenmeir/eloquent-has-many-deep-contracts",
-            "version": "v1.2.1",
+            "version": "v1.3",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/staudenmeir/eloquent-has-many-deep-contracts/v1.2.1/staudenmeir-eloquent-has-many-deep-contracts-v1.2.1.zip",
-                "reference": "3ad76c6eeda60042f262d113bf471dcce584d88b",
+                "url": "https://mirrors.tencent.com/repository/composer/staudenmeir/eloquent-has-many-deep-contracts/v1.3/staudenmeir-eloquent-has-many-deep-contracts-v1.3.zip",
+                "reference": "37ce351e4db919b3af606bc8ca0e62e2e4939cde",
                 "shasum": ""
             },
             "require": {
-                "illuminate/database": "^11.0",
+                "illuminate/database": "^12.0",
                 "php": "^8.2"
             },
             "type": "library",
@@ -6106,32 +6177,32 @@
             "description": "Contracts for staudenmeir/eloquent-has-many-deep",
             "support": {
                 "issues": "https://github.com/staudenmeir/eloquent-has-many-deep-contracts/issues",
-                "source": "https://github.com/staudenmeir/eloquent-has-many-deep-contracts/tree/v1.2.1"
+                "source": "https://github.com/staudenmeir/eloquent-has-many-deep-contracts/tree/v1.3"
             },
-            "time": "2024-09-25T18:24:22+00:00"
+            "time": "2025-02-15T17:11:01+00:00"
         },
         {
             "name": "staudenmeir/eloquent-json-relations",
-            "version": "v1.13.3",
+            "version": "v1.14.2",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/staudenmeir/eloquent-json-relations/v1.13.3/staudenmeir-eloquent-json-relations-v1.13.3.zip",
-                "reference": "aaa2c78868842b7cdf7a60b2a1d6b4be6517aa11",
+                "url": "https://mirrors.tencent.com/repository/composer/staudenmeir/eloquent-json-relations/v1.14.2/staudenmeir-eloquent-json-relations-v1.14.2.zip",
+                "reference": "9e39de2270edaec445362a3d20562d863b0b50de",
                 "shasum": ""
             },
             "require": {
-                "illuminate/database": "^11.0",
+                "illuminate/database": "^12.0",
                 "php": "^8.2",
-                "staudenmeir/eloquent-has-many-deep-contracts": "^1.2"
+                "staudenmeir/eloquent-has-many-deep-contracts": "^1.3"
             },
             "require-dev": {
                 "barryvdh/laravel-ide-helper": "^3.0",
                 "larastan/larastan": "^3.0",
-                "laravel/framework": "^11.0",
+                "laravel/framework": "^12.0",
                 "mockery/mockery": "^1.5.1",
-                "orchestra/testbench-core": "^9.5",
+                "orchestra/testbench-core": "^10.0",
                 "phpunit/phpunit": "^11.0",
-                "staudenmeir/eloquent-has-many-deep": "^1.20"
+                "staudenmeir/eloquent-has-many-deep": "^1.21"
             },
             "type": "library",
             "extra": {
@@ -6158,17 +6229,17 @@
             "description": "Laravel Eloquent relationships with JSON keys",
             "support": {
                 "issues": "https://github.com/staudenmeir/eloquent-json-relations/issues",
-                "source": "https://github.com/staudenmeir/eloquent-json-relations/tree/v1.13.3"
+                "source": "https://github.com/staudenmeir/eloquent-json-relations/tree/v1.14.2"
             },
-            "time": "2025-02-16T14:49:18+00:00"
+            "time": "2026-03-01T11:12:21+00:00"
         },
         {
             "name": "symfony/cache",
-            "version": "v7.4.7",
+            "version": "v7.4.8",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/symfony/cache/v7.4.7/symfony-cache-v7.4.7.zip",
-                "reference": "665522ec357540e66c294c08583b40ee576574f0",
+                "url": "https://mirrors.tencent.com/repository/composer/symfony/cache/v7.4.8/symfony-cache-v7.4.8.zip",
+                "reference": "467464da294734b0fb17e853e5712abc8470f819",
                 "shasum": ""
             },
             "require": {
@@ -6238,9 +6309,9 @@
                 "psr6"
             ],
             "support": {
-                "source": "https://github.com/symfony/cache/tree/v7.4.7"
+                "source": "https://github.com/symfony/cache/tree/v7.4.8"
             },
-            "time": "2026-03-06T08:14:57+00:00"
+            "time": "2026-03-30T15:15:47+00:00"
         },
         {
             "name": "symfony/cache-contracts",
@@ -6300,11 +6371,11 @@
         },
         {
             "name": "symfony/clock",
-            "version": "v8.0.0",
+            "version": "v8.0.8",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/symfony/clock/v8.0.0/symfony-clock-v8.0.0.zip",
-                "reference": "832119f9b8dbc6c8e6f65f30c5969eca1e88764f",
+                "url": "https://mirrors.tencent.com/repository/composer/symfony/clock/v8.0.8/symfony-clock-v8.0.8.zip",
+                "reference": "b55a638b189a6faa875e0ccdb00908fb87af95b3",
                 "shasum": ""
             },
             "require": {
@@ -6347,17 +6418,17 @@
                 "time"
             ],
             "support": {
-                "source": "https://github.com/symfony/clock/tree/v8.0.0"
+                "source": "https://github.com/symfony/clock/tree/v8.0.8"
             },
-            "time": "2025-11-12T15:46:48+00:00"
+            "time": "2026-03-30T15:14:47+00:00"
         },
         {
             "name": "symfony/console",
-            "version": "v7.4.7",
+            "version": "v7.4.8",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/symfony/console/v7.4.7/symfony-console-v7.4.7.zip",
-                "reference": "e1e6770440fb9c9b0cf725f81d1361ad1835329d",
+                "url": "https://mirrors.tencent.com/repository/composer/symfony/console/v7.4.8/symfony-console-v7.4.8.zip",
+                "reference": "1e92e39c51f95b88e3d66fa2d9f06d1fb45dd707",
                 "shasum": ""
             },
             "require": {
@@ -6421,9 +6492,9 @@
                 "terminal"
             ],
             "support": {
-                "source": "https://github.com/symfony/console/tree/v7.4.7"
+                "source": "https://github.com/symfony/console/tree/v7.4.8"
             },
-            "time": "2026-03-06T14:06:20+00:00"
+            "time": "2026-03-30T13:54:39+00:00"
         },
         {
             "name": "symfony/deprecation-contracts",
@@ -6474,11 +6545,11 @@
         },
         {
             "name": "symfony/event-dispatcher",
-            "version": "v7.4.4",
+            "version": "v7.4.8",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/symfony/event-dispatcher/v7.4.4/symfony-event-dispatcher-v7.4.4.zip",
-                "reference": "dc2c0eba1af673e736bb851d747d266108aea746",
+                "url": "https://mirrors.tencent.com/repository/composer/symfony/event-dispatcher/v7.4.8/symfony-event-dispatcher-v7.4.8.zip",
+                "reference": "f57b899fa736fd71121168ef268f23c206083f0a",
                 "shasum": ""
             },
             "require": {
@@ -6529,9 +6600,9 @@
             "description": "Provides tools that allow your application components to communicate with each other by dispatching events and listening to them",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/event-dispatcher/tree/v7.4.4"
+                "source": "https://github.com/symfony/event-dispatcher/tree/v7.4.8"
             },
-            "time": "2026-01-05T11:45:34+00:00"
+            "time": "2026-03-30T13:54:39+00:00"
         },
         {
             "name": "symfony/event-dispatcher-contracts",
@@ -6591,11 +6662,11 @@
         },
         {
             "name": "symfony/filesystem",
-            "version": "v8.0.6",
+            "version": "v8.0.8",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/symfony/filesystem/v8.0.6/symfony-filesystem-v8.0.6.zip",
-                "reference": "7bf9162d7a0dff98d079b72948508fa48018a770",
+                "url": "https://mirrors.tencent.com/repository/composer/symfony/filesystem/v8.0.8/symfony-filesystem-v8.0.8.zip",
+                "reference": "66b769ae743ce2d13e435528fbef4af03d623e5a",
                 "shasum": ""
             },
             "require": {
@@ -6631,17 +6702,17 @@
             "description": "Provides basic utilities for the filesystem",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/filesystem/tree/v8.0.6"
+                "source": "https://github.com/symfony/filesystem/tree/v8.0.8"
             },
-            "time": "2026-02-25T16:59:43+00:00"
+            "time": "2026-03-30T15:14:47+00:00"
         },
         {
             "name": "symfony/finder",
-            "version": "v8.0.6",
+            "version": "v8.0.8",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/symfony/finder/v8.0.6/symfony-finder-v8.0.6.zip",
-                "reference": "441404f09a54de6d1bd6ad219e088cdf4c91f97c",
+                "url": "https://mirrors.tencent.com/repository/composer/symfony/finder/v8.0.8/symfony-finder-v8.0.8.zip",
+                "reference": "8da41214757b87d97f181e3d14a4179286151007",
                 "shasum": ""
             },
             "require": {
@@ -6675,17 +6746,17 @@
             "description": "Finds files and directories via an intuitive fluent interface",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/finder/tree/v8.0.6"
+                "source": "https://github.com/symfony/finder/tree/v8.0.8"
             },
-            "time": "2026-01-29T09:41:02+00:00"
+            "time": "2026-03-30T15:14:47+00:00"
         },
         {
             "name": "symfony/lock",
-            "version": "v7.4.6",
+            "version": "v7.4.8",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/symfony/lock/v7.4.6/symfony-lock-v7.4.6.zip",
-                "reference": "c39d02f61a039ef660e44f36719b1440414fe493",
+                "url": "https://mirrors.tencent.com/repository/composer/symfony/lock/v7.4.8/symfony-lock-v7.4.8.zip",
+                "reference": "e0cd253a8a043edc69c04a6b51b5f598b6a06515",
                 "shasum": ""
             },
             "require": {
@@ -6734,17 +6805,17 @@
                 "semaphore"
             ],
             "support": {
-                "source": "https://github.com/symfony/lock/tree/v7.4.6"
+                "source": "https://github.com/symfony/lock/tree/v7.4.8"
             },
-            "time": "2026-02-17T07:53:42+00:00"
+            "time": "2026-03-31T07:11:17+00:00"
         },
         {
             "name": "symfony/messenger",
-            "version": "v7.4.7",
+            "version": "v7.4.8",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/symfony/messenger/v7.4.7/symfony-messenger-v7.4.7.zip",
-                "reference": "13a00f01a46ba7d47ac7f0e3d9a901d19f9432f0",
+                "url": "https://mirrors.tencent.com/repository/composer/symfony/messenger/v7.4.8/symfony-messenger-v7.4.8.zip",
+                "reference": "ddf5ab29bc0329ece30e16f01c86abb6241e92d8",
                 "shasum": ""
             },
             "require": {
@@ -6804,9 +6875,9 @@
             "description": "Helps applications send and receive messages to/from other applications or via message queues",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/messenger/tree/v7.4.7"
+                "source": "https://github.com/symfony/messenger/tree/v7.4.8"
             },
-            "time": "2026-03-04T13:54:41+00:00"
+            "time": "2026-03-30T12:55:43+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
@@ -7220,6 +7291,62 @@
             "time": "2024-09-09T11:45:10+00:00"
         },
         {
+            "name": "symfony/polyfill-php83",
+            "version": "v1.33.0",
+            "dist": {
+                "type": "zip",
+                "url": "https://mirrors.tencent.com/repository/composer/symfony/polyfill-php83/v1.33.0/symfony-polyfill-php83-v1.33.0.zip",
+                "reference": "17f6f9a6b1735c0f163024d959f700cfbc5155e5",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2"
+            },
+            "type": "library",
+            "extra": {
+                "thanks": {
+                    "url": "https://github.com/symfony/polyfill",
+                    "name": "symfony/polyfill"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "bootstrap.php"
+                ],
+                "psr-4": {
+                    "Symfony\\Polyfill\\Php83\\": ""
+                },
+                "classmap": [
+                    "Resources/stubs"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nicolas Grekas",
+                    "email": "p@tchwork.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony polyfill backporting some PHP 8.3+ features to lower PHP versions",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "compatibility",
+                "polyfill",
+                "portable",
+                "shim"
+            ],
+            "support": {
+                "source": "https://github.com/symfony/polyfill-php83/tree/v1.33.0"
+            },
+            "time": "2025-07-08T02:45:35+00:00"
+        },
+        {
             "name": "symfony/polyfill-php84",
             "version": "v1.33.0",
             "dist": {
@@ -7276,12 +7403,68 @@
             "time": "2025-06-24T13:30:11+00:00"
         },
         {
-            "name": "symfony/process",
-            "version": "v7.4.5",
+            "name": "symfony/polyfill-php85",
+            "version": "v1.33.0",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/symfony/process/v7.4.5/symfony-process-v7.4.5.zip",
-                "reference": "608476f4604102976d687c483ac63a79ba18cc97",
+                "url": "https://mirrors.tencent.com/repository/composer/symfony/polyfill-php85/v1.33.0/symfony-polyfill-php85-v1.33.0.zip",
+                "reference": "d4e5fcd4ab3d998ab16c0db48e6cbb9a01993f91",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2"
+            },
+            "type": "library",
+            "extra": {
+                "thanks": {
+                    "url": "https://github.com/symfony/polyfill",
+                    "name": "symfony/polyfill"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "bootstrap.php"
+                ],
+                "psr-4": {
+                    "Symfony\\Polyfill\\Php85\\": ""
+                },
+                "classmap": [
+                    "Resources/stubs"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nicolas Grekas",
+                    "email": "p@tchwork.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony polyfill backporting some PHP 8.5+ features to lower PHP versions",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "compatibility",
+                "polyfill",
+                "portable",
+                "shim"
+            ],
+            "support": {
+                "source": "https://github.com/symfony/polyfill-php85/tree/v1.33.0"
+            },
+            "time": "2025-06-23T16:12:55+00:00"
+        },
+        {
+            "name": "symfony/process",
+            "version": "v7.4.8",
+            "dist": {
+                "type": "zip",
+                "url": "https://mirrors.tencent.com/repository/composer/symfony/process/v7.4.8/symfony-process-v7.4.8.zip",
+                "reference": "60f19cd3badc8de688421e21e4305eba50f8089a",
                 "shasum": ""
             },
             "require": {
@@ -7312,17 +7495,17 @@
             "description": "Executes commands in sub-processes",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/process/tree/v7.4.5"
+                "source": "https://github.com/symfony/process/tree/v7.4.8"
             },
-            "time": "2026-01-26T15:07:59+00:00"
+            "time": "2026-03-24T13:12:05+00:00"
         },
         {
             "name": "symfony/redis-messenger",
-            "version": "v8.0.6",
+            "version": "v8.0.8",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/symfony/redis-messenger/v8.0.6/symfony-redis-messenger-v8.0.6.zip",
-                "reference": "706bbc32a8e061af1671c751f3e987bc5df4009b",
+                "url": "https://mirrors.tencent.com/repository/composer/symfony/redis-messenger/v8.0.8/symfony-redis-messenger-v8.0.8.zip",
+                "reference": "d3e882f7b9ce1ca93e529de7cc79f55fad9af4a7",
                 "shasum": ""
             },
             "require": {
@@ -7364,9 +7547,9 @@
             "description": "Symfony Redis extension Messenger Bridge",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/redis-messenger/tree/v8.0.6"
+                "source": "https://github.com/symfony/redis-messenger/tree/v8.0.8"
             },
-            "time": "2026-02-14T18:07:45+00:00"
+            "time": "2026-03-17T14:00:10+00:00"
         },
         {
             "name": "symfony/service-contracts",
@@ -7433,11 +7616,11 @@
         },
         {
             "name": "symfony/string",
-            "version": "v8.0.6",
+            "version": "v8.0.8",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/symfony/string/v8.0.6/symfony-string-v8.0.6.zip",
-                "reference": "6c9e1108041b5dce21a9a4984b531c4923aa9ec4",
+                "url": "https://mirrors.tencent.com/repository/composer/symfony/string/v8.0.8/symfony-string-v8.0.8.zip",
+                "reference": "ae9488f874d7603f9d2dfbf120203882b645d963",
                 "shasum": ""
             },
             "require": {
@@ -7493,17 +7676,17 @@
                 "utf8"
             ],
             "support": {
-                "source": "https://github.com/symfony/string/tree/v8.0.6"
+                "source": "https://github.com/symfony/string/tree/v8.0.8"
             },
-            "time": "2026-02-09T10:14:57+00:00"
+            "time": "2026-03-30T15:14:47+00:00"
         },
         {
             "name": "symfony/translation",
-            "version": "v8.0.6",
+            "version": "v8.0.8",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/symfony/translation/v8.0.6/symfony-translation-v8.0.6.zip",
-                "reference": "13ff19bcf2bea492d3c2fbeaa194dd6f4599ce1b",
+                "url": "https://mirrors.tencent.com/repository/composer/symfony/translation/v8.0.8/symfony-translation-v8.0.8.zip",
+                "reference": "27c03ae3940de24ba2f71cfdbac824f2aa1fdf2f",
                 "shasum": ""
             },
             "require": {
@@ -7562,9 +7745,9 @@
             "description": "Provides tools to internationalize your application",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/translation/tree/v8.0.6"
+                "source": "https://github.com/symfony/translation/tree/v8.0.8"
             },
-            "time": "2026-02-17T13:07:04+00:00"
+            "time": "2026-03-30T15:14:47+00:00"
         },
         {
             "name": "symfony/translation-contracts",
@@ -7626,11 +7809,11 @@
         },
         {
             "name": "symfony/var-dumper",
-            "version": "v7.4.6",
+            "version": "v7.4.8",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/symfony/var-dumper/v7.4.6/symfony-var-dumper-v7.4.6.zip",
-                "reference": "045321c440ac18347b136c63d2e9bf28a2dc0291",
+                "url": "https://mirrors.tencent.com/repository/composer/symfony/var-dumper/v7.4.8/symfony-var-dumper-v7.4.8.zip",
+                "reference": "9510c3966f749a1d1ff0059e1eabef6cc621e7fd",
                 "shasum": ""
             },
             "require": {
@@ -7683,17 +7866,17 @@
                 "dump"
             ],
             "support": {
-                "source": "https://github.com/symfony/var-dumper/tree/v7.4.6"
+                "source": "https://github.com/symfony/var-dumper/tree/v7.4.8"
             },
-            "time": "2026-02-15T10:53:20+00:00"
+            "time": "2026-03-30T13:44:50+00:00"
         },
         {
             "name": "symfony/var-exporter",
-            "version": "v8.0.0",
+            "version": "v8.0.8",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/symfony/var-exporter/v8.0.0/symfony-var-exporter-v8.0.0.zip",
-                "reference": "7345f46c251f2eb27c7b3ebdb5bb076b3ffcae04",
+                "url": "https://mirrors.tencent.com/repository/composer/symfony/var-exporter/v8.0.8/symfony-var-exporter-v8.0.8.zip",
+                "reference": "15776bb07a91b089037da89f8832fa41d5fa6ec6",
                 "shasum": ""
             },
             "require": {
@@ -7739,17 +7922,17 @@
                 "serialize"
             ],
             "support": {
-                "source": "https://github.com/symfony/var-exporter/tree/v8.0.0"
+                "source": "https://github.com/symfony/var-exporter/tree/v8.0.8"
             },
-            "time": "2025-11-05T18:53:00+00:00"
+            "time": "2026-03-30T15:14:47+00:00"
         },
         {
             "name": "symfony/yaml",
-            "version": "v7.4.6",
+            "version": "v7.4.8",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/symfony/yaml/v7.4.6/symfony-yaml-v7.4.6.zip",
-                "reference": "58751048de17bae71c5aa0d13cb19d79bca26391",
+                "url": "https://mirrors.tencent.com/repository/composer/symfony/yaml/v7.4.8/symfony-yaml-v7.4.8.zip",
+                "reference": "c58fdf7b3d6c2995368264c49e4e8b05bcff2883",
                 "shasum": ""
             },
             "require": {
@@ -7791,9 +7974,9 @@
             "description": "Loads and dumps YAML files",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/yaml/tree/v7.4.6"
+                "source": "https://github.com/symfony/yaml/tree/v7.4.8"
             },
-            "time": "2026-02-09T09:33:46+00:00"
+            "time": "2026-03-24T13:12:05+00:00"
         },
         {
             "name": "thiagoalessio/tesseract_ocr",
@@ -8157,11 +8340,11 @@
     "packages-dev": [
         {
             "name": "brianium/paratest",
-            "version": "v7.19.2",
+            "version": "v7.20.0",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/brianium/paratest/v7.19.2/brianium-paratest-v7.19.2.zip",
-                "reference": "66e4f7910cecf67736bccf2b8bd53a2e3eb98bd9",
+                "url": "https://mirrors.tencent.com/repository/composer/brianium/paratest/v7.20.0/brianium-paratest-v7.20.0.zip",
+                "reference": "81c80677c9ec0ed4ef16b246167f11dec81a6e3d",
                 "shasum": ""
             },
             "require": {
@@ -8185,7 +8368,7 @@
                 "ext-pcntl": "*",
                 "ext-pcov": "*",
                 "ext-posix": "*",
-                "phpstan/phpstan": "^2.1.40",
+                "phpstan/phpstan": "^2.1.44",
                 "phpstan/phpstan-deprecation-rules": "^2.0.4",
                 "phpstan/phpstan-phpunit": "^2.0.16",
                 "phpstan/phpstan-strict-rules": "^2.0.10",
@@ -8228,9 +8411,9 @@
             ],
             "support": {
                 "issues": "https://github.com/paratestphp/paratest/issues",
-                "source": "https://github.com/paratestphp/paratest/tree/v7.19.2"
+                "source": "https://github.com/paratestphp/paratest/tree/v7.20.0"
             },
-            "time": "2026-03-09T14:33:17+00:00"
+            "time": "2026-03-29T15:46:14+00:00"
         },
         {
             "name": "fidry/cpu-core-counter",
@@ -8496,18 +8679,18 @@
         },
         {
             "name": "nunomaduro/collision",
-            "version": "v8.9.1",
+            "version": "v8.9.3",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/nunomaduro/collision/v8.9.1/nunomaduro-collision-v8.9.1.zip",
-                "reference": "a1ed3fa530fd60bc515f9303e8520fcb7d4bd935",
+                "url": "https://mirrors.tencent.com/repository/composer/nunomaduro/collision/v8.9.3/nunomaduro-collision-v8.9.3.zip",
+                "reference": "b0d8ab95b29c3189aeeb902d81215231df4c1b64",
                 "shasum": ""
             },
             "require": {
                 "filp/whoops": "^2.18.4",
                 "nunomaduro/termwind": "^2.4.0",
                 "php": "^8.2.0",
-                "symfony/console": "^7.4.4 || ^8.0.4"
+                "symfony/console": "^7.4.8 || ^8.0.4"
             },
             "conflict": {
                 "laravel/framework": "<11.48.0 || >=14.0.0",
@@ -8515,12 +8698,12 @@
             },
             "require-dev": {
                 "brianium/paratest": "^7.8.5",
-                "larastan/larastan": "^3.9.2",
-                "laravel/framework": "^11.48.0 || ^12.52.0",
-                "laravel/pint": "^1.27.1",
-                "orchestra/testbench-core": "^9.12.0 || ^10.9.0",
-                "pestphp/pest": "^3.8.5 || ^4.4.1 || ^5.0.0",
-                "sebastian/environment": "^7.2.1 || ^8.0.3 || ^9.0.0"
+                "larastan/larastan": "^3.9.3",
+                "laravel/framework": "^11.48.0 || ^12.56.0 || ^13.2.0",
+                "laravel/pint": "^1.29.0",
+                "orchestra/testbench-core": "^9.12.0 || ^10.12.1 || ^11.0.0",
+                "pestphp/pest": "^3.8.5 || ^4.4.3 || ^5.0.0",
+                "sebastian/environment": "^7.2.1 || ^8.0.4 || ^9.0.0"
             },
             "type": "library",
             "extra": {
@@ -8568,32 +8751,32 @@
                 "issues": "https://github.com/nunomaduro/collision/issues",
                 "source": "https://github.com/nunomaduro/collision"
             },
-            "time": "2026-02-17T17:33:08+00:00"
+            "time": "2026-04-06T19:25:53+00:00"
         },
         {
             "name": "pestphp/pest",
-            "version": "v4.4.3",
+            "version": "v4.4.5",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/pestphp/pest/v4.4.3/pestphp-pest-v4.4.3.zip",
-                "reference": "e6ab897594312728ef2e32d586cb4f6780b1b495",
+                "url": "https://mirrors.tencent.com/repository/composer/pestphp/pest/v4.4.5/pestphp-pest-v4.4.5.zip",
+                "reference": "9797a71dbc776f46d6fcacb708b002755da6f37a",
                 "shasum": ""
             },
             "require": {
-                "brianium/paratest": "^7.19.2",
-                "nunomaduro/collision": "^8.9.1",
+                "brianium/paratest": "^7.20.0",
+                "nunomaduro/collision": "^8.9.2",
                 "nunomaduro/termwind": "^2.4.0",
                 "pestphp/pest-plugin": "^4.0.0",
                 "pestphp/pest-plugin-arch": "^4.0.0",
                 "pestphp/pest-plugin-mutate": "^4.0.1",
                 "pestphp/pest-plugin-profanity": "^4.2.1",
                 "php": "^8.3.0",
-                "phpunit/phpunit": "^12.5.14",
-                "symfony/process": "^7.4.5|^8.0.5"
+                "phpunit/phpunit": "^12.5.16",
+                "symfony/process": "^7.4.8|^8.0.8"
             },
             "conflict": {
                 "filp/whoops": "<2.18.3",
-                "phpunit/phpunit": ">12.5.14",
+                "phpunit/phpunit": ">12.5.16",
                 "sebastian/exporter": "<7.0.0",
                 "webmozart/assert": "<1.11.0"
             },
@@ -8601,7 +8784,7 @@
                 "pestphp/pest-dev-tools": "^4.1.0",
                 "pestphp/pest-plugin-browser": "^4.3.0",
                 "pestphp/pest-plugin-type-coverage": "^4.0.3",
-                "psy/psysh": "^0.12.21"
+                "psy/psysh": "^0.12.22"
             },
             "bin": [
                 "bin/pest"
@@ -8666,9 +8849,9 @@
             ],
             "support": {
                 "issues": "https://github.com/pestphp/pest/issues",
-                "source": "https://github.com/pestphp/pest/tree/v4.4.3"
+                "source": "https://github.com/pestphp/pest/tree/v4.4.5"
             },
-            "time": "2026-03-21T13:14:39+00:00"
+            "time": "2026-04-03T13:43:28+00:00"
         },
         {
             "name": "pestphp/pest-plugin",
@@ -9443,11 +9626,11 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "12.5.14",
+            "version": "12.5.16",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/phpunit/phpunit/12.5.14/phpunit-phpunit-12.5.14.zip",
-                "reference": "47283cfd98d553edcb1353591f4e255dc1bb61f0",
+                "url": "https://mirrors.tencent.com/repository/composer/phpunit/phpunit/12.5.16/phpunit-phpunit-12.5.16.zip",
+                "reference": "b2429f58ae75cae980b5bb9873abe4de6aac8b58",
                 "shasum": ""
             },
             "require": {
@@ -9469,7 +9652,7 @@
                 "sebastian/cli-parser": "^4.2.0",
                 "sebastian/comparator": "^7.1.4",
                 "sebastian/diff": "^7.0.0",
-                "sebastian/environment": "^8.0.3",
+                "sebastian/environment": "^8.0.4",
                 "sebastian/exporter": "^7.0.2",
                 "sebastian/global-state": "^8.0.2",
                 "sebastian/object-enumerator": "^7.0.0",
@@ -9515,9 +9698,9 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/12.5.14"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/12.5.16"
             },
-            "time": "2026-02-18T12:38:40+00:00"
+            "time": "2026-04-03T05:26:42+00:00"
         },
         {
             "name": "sebastian/cli-parser",

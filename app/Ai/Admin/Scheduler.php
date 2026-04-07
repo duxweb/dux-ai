@@ -44,6 +44,7 @@ class Scheduler extends Resources
             $keyword = (string)$params['keyword'];
             $query->where(function (Builder $builder) use ($keyword) {
                 $builder->where('dedupe_key', 'like', "%{$keyword}%")
+                    ->orWhere('callback_name', 'like', "%{$keyword}%")
                     ->orWhere('callback_code', 'like', "%{$keyword}%")
                     ->orWhere('last_error', 'like', "%{$keyword}%");
             });

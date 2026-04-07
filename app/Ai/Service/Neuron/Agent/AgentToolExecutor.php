@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Ai\Service\Neuron\Agent;
 
+use App\Ai\Service\Tool as ToolConfig;
 use App\Ai\Service\Tool as ToolService;
 use Core\Handlers\ExceptionBusiness;
 use Throwable;
@@ -13,12 +14,28 @@ final class AgentToolExecutor
     /**
      * @param array<string, mixed> $meta
      */
-    public function __construct(
-        private readonly string $toolCode,
-        private readonly array $meta,
-        private readonly int $sessionId,
-        private readonly int $agentId,
-    ) {
+    private readonly string $toolCode;
+
+    /**
+     * 仅保留工具固定配置，避免把 capability handler 等闭包带进工具实例导致审批中断无法序列化。
+     *
+     * @var array<string, mixed>
+     */
+    private readonly array $meta;
+
+    private readonly int $sessionId;
+
+    private readonly int $agentId;
+
+    /**
+     * @param array<string, mixed> $meta
+     */
+    public function __construct(string $toolCode, array $meta, int $sessionId, int $agentId)
+    {
+        $this->toolCode = $toolCode;
+        $this->meta = ToolConfig::mergeToolParams($meta, []);
+        $this->sessionId = $sessionId;
+        $this->agentId = $agentId;
     }
 
     public function __invoke(mixed ...$args): mixed

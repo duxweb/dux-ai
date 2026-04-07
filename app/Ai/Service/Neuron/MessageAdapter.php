@@ -75,7 +75,10 @@ final class MessageAdapter
                         ->setCallId(isset($call['id']) ? (string)$call['id'] : null);
                 }
 
-                $message = new ToolCallMessage($normalized, $tools);
+                $message = new ToolCallMessage(
+                    is_string($normalized) && trim($normalized) === '' ? null : $normalized,
+                    $tools
+                );
                 $message->addMetadata('tool_calls', $toolCalls);
             } elseif ($role === 'tool' && $toolCallId !== '') {
                 $tool = Tool::make('tool_result')

@@ -22,6 +22,7 @@ final class AiConfig
             'default_rag_provider_id' => null,
             'rate_limit' => [
                 'tpm' => null,
+                'concurrency' => null,
                 'max_wait_ms' => 8000,
             ],
             'editor' => [

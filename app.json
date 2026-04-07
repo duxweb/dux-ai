@@ -3,9 +3,9 @@
     "description": "This is the dux application dependency configuration",
     "dependencies": {
         "duxweb/data": "0.1.4",
-        "duxweb/system": "0.2.12",
+        "duxweb/system": "0.2.13",
         "duxweb/install": "0.0.11",
         "duxweb/boot": "0.0.1",
-        "duxweb/ai": "0.3.1"
+        "duxweb/ai": "0.3.3"
     }
 }

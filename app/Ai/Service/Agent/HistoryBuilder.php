@@ -6,6 +6,78 @@ namespace App\Ai\Service\Agent;
 
 final class HistoryBuilder
 {
+    private static function normalizeMessageComparableContent(mixed $content): string
+    {
+        if (is_array($content)) {
+            return json_encode($content, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?: '';
+        }
+
+        return trim((string)($content ?? ''));
+    }
+
+    /**
+     * @param array<string, mixed>|null $message
+     */
+    private static function isAssistantToolCallMessage(?array $message): bool
+    {
+        if (!is_array($message)) {
+            return false;
+        }
+
+        return ($message['role'] ?? '') === 'assistant'
+            && isset($message['tool_calls'])
+            && is_array($message['tool_calls'])
+            && $message['tool_calls'] !== [];
+    }
+
+    /**
+     * @param array<string, mixed>|null $last
+     * @param array<string, mixed> $message
+     */
+    private static function isDuplicateConsecutiveUserMessage(?array $last, array $message): bool
+    {
+        if (!is_array($last)) {
+            return false;
+        }
+
+        if (($last['role'] ?? '') !== 'user' || ($message['role'] ?? '') !== 'user') {
+            return false;
+        }
+
+        return self::normalizeMessageComparableContent($last['content'] ?? null)
+            === self::normalizeMessageComparableContent($message['content'] ?? null);
+    }
+
+    /**
+     * 清洗历史中的非法序列，兼容旧数据里的连续 user / 孤立 tool。
+     *
+     * @param array<int, array<string, mixed>> $messages
+     * @return array<int, array<string, mixed>>
+     */
+    private static function sanitizeSequence(array $messages): array
+    {
+        $result = [];
+
+        foreach ($messages as $message) {
+            $role = (string)($message['role'] ?? '');
+            $lastIndex = array_key_last($result);
+            $last = $lastIndex !== null ? $result[$lastIndex] : null;
+
+            if (self::isDuplicateConsecutiveUserMessage($last, $message)) {
+                $result[$lastIndex] = $message;
+                continue;
+            }
+
+            if ($role === 'tool' && !self::isAssistantToolCallMessage($last)) {
+                continue;
+            }
+
+            $result[] = $message;
+        }
+
+        return $result;
+    }
+
     private static function isErrorMessagePayload(array $payload): bool
     {
         if (!array_key_exists('error', $payload)) {
@@ -181,6 +253,6 @@ final class HistoryBuilder
             $messages[] = $message;
         }
 
-        return $messages;
+        return self::sanitizeSequence($messages);
     }
 }

@@ -12,6 +12,16 @@ All notable changes to this project will be documented in this file.
 
 
 
+
+
+## [0.3.3] - 2026-03-31
+
+- fix: 稳定性
+
+## [0.3.2] - 2026-03-28
+
+- feat: 增加并发的模型限制配置
+
 ## [0.3.1] - 2026-03-26
 
 - feat: 增加默认创建新会话按钮

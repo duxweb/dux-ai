@@ -279,7 +279,8 @@ class Agent extends Resources
         }
 
         $params = $request->getQueryParams();
-        $limit = max(1, min(200, (int)($params['limit'] ?? 50)));
+        $limit = (int)($params['limit'] ?? 0);
+        $limit = $limit <= 0 ? 0 : min(200, $limit);
         $messages = AgentService::listMessages($sessionId, $limit);
 
         return send($response, 'ok', $messages);

@@ -244,6 +244,7 @@ final class VideoGenerateCapability
         $job = AiSchedulerService::createJob([
             'callback_type' => 'video',
             'callback_code' => 'poll_task',
+            'callback_name' => '视频任务轮询',
             'callback_action' => 'poll',
             'dedupe_key' => $dedupeKey,
             'status' => 'pending',

@@ -11,6 +11,7 @@ use App\Ai\Service\Neuron\Agent\TokenEstimator;
 use App\Ai\Service\Usage\UsageResolver;
 use App\Ai\Support\AiRuntime;
 use Core\Handlers\ExceptionBusiness;
+use GuzzleHttp\Exception\RequestException;
 use NeuronAI\Chat\Messages\UserMessage;
 
 final class StructuredOutputService
@@ -65,16 +66,23 @@ final class StructuredOutputService
                     'structured_schema' => $structuredSchema,
                 ]);
                 try {
-                    $provider = AI::forModel($model, array_merge($providerOverrides, [
-                        '__structured_strict' => true,
-                    ]), $timeoutSeconds);
-                    if ($systemPrompt !== null && trim($systemPrompt) !== '') {
-                        $provider->systemPrompt($systemPrompt);
-                    }
-                    $response = $provider->structured(
-                        UserMessage::make($prompt),
-                        \stdClass::class,
-                        $jsonSchema
+                    $response = self::runWithRetry(
+                        static function () use ($model, $providerOverrides, $timeoutSeconds, $systemPrompt, $prompt, $jsonSchema) {
+                            $provider = AI::forModel($model, array_merge($providerOverrides, [
+                                '__structured_strict' => true,
+                            ]), $timeoutSeconds);
+                            if ($systemPrompt !== null && trim($systemPrompt) !== '') {
+                                $provider->systemPrompt($systemPrompt);
+                            }
+
+                            return $provider->structured(
+                                UserMessage::make($prompt),
+                                \stdClass::class,
+                                $jsonSchema
+                            );
+                        },
+                        'structured',
+                        $model
                     );
 
                     $raw = $response->getContent();
@@ -120,7 +128,18 @@ final class StructuredOutputService
             $provider->systemPrompt($systemPrompt);
         }
         try {
-            $response = $provider->chat(UserMessage::make($prompt));
+            $response = self::runWithRetry(
+                static function () use ($model, $providerOverrides, $timeoutSeconds, $systemPrompt, $prompt) {
+                    $provider = AI::forModel($model, $providerOverrides, $timeoutSeconds);
+                    if ($systemPrompt !== null && trim($systemPrompt) !== '') {
+                        $provider->systemPrompt($systemPrompt);
+                    }
+
+                    return $provider->chat(UserMessage::make($prompt));
+                },
+                'text',
+                $model
+            );
             $content = $response->getContent();
             self::finalizeRateReservation(
                 $reservation,
@@ -236,6 +255,63 @@ final class StructuredOutputService
         }
 
         ModelRateLimiter::finalize($reservation, $actualTokens);
+    }
+
+    private static function shouldRetryRateLimit(\Throwable $e): bool
+    {
+        $message = $e->getMessage();
+        $lower = strtolower($message);
+
+        if ($e instanceof RequestException && $e->hasResponse()) {
+            $status = $e->getResponse()?->getStatusCode();
+            if ($status === 429) {
+                return true;
+            }
+        }
+
+        return str_contains($message, 'TooManyRequests')
+            || str_contains($message, 'RequestBurstTooFast')
+            || str_contains($lower, 'http 429')
+            || str_contains($lower, '429')
+            || str_contains($lower, 'rate limit')
+            || str_contains($lower, 'serveroverloaded');
+    }
+
+    private static function retryDelayMs(int $attempt): int
+    {
+        return match ($attempt) {
+            1 => 600,
+            2 => 1400,
+            default => 2200,
+        };
+    }
+
+    private static function runWithRetry(callable $callback, string $mode, AiModel $model): mixed
+    {
+        $attempt = 0;
+        $maxRetries = 2;
+
+        while (true) {
+            try {
+                return $callback();
+            } catch (\Throwable $e) {
+                if (!self::shouldRetryRateLimit($e) || $attempt >= $maxRetries) {
+                    throw $e;
+                }
+
+                $attempt++;
+                $delayMs = self::retryDelayMs($attempt);
+                AiRuntime::instance()->log('ai.model')->warning('ai.model.retry', [
+                    'model_id' => (int)$model->id,
+                    'model_code' => (string)($model->code ?? ''),
+                    'mode' => $mode,
+                    'attempt' => $attempt,
+                    'delay_ms' => $delayMs,
+                    'reason' => $e->getMessage(),
+                ]);
+                usleep($delayMs * 1000);
+            }
+        }
     }
 
     /**

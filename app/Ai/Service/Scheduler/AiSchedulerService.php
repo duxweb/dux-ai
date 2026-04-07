@@ -44,6 +44,7 @@ final class AiSchedulerService
         ], [
             'callback_type' => $callbackType,
             'callback_code' => $callbackCode,
+            'callback_name' => trim((string)($input['callback_name'] ?? '')) ?: $callbackCode,
             'callback_action' => trim((string)($input['callback_action'] ?? '')) ?: null,
             'workflow_id' => trim((string)($input['workflow_id'] ?? '')) ?: null,
             'status' => (string)($input['status'] ?? 'pending'),
@@ -151,6 +152,23 @@ final class AiSchedulerService
         $max = max(1, (int)$job->max_attempts);
 
         if ($attempt >= $max) {
+            $nextExecuteAt = self::nextRecurringExecuteAt($job);
+            if ($nextExecuteAt) {
+                $job->status = 'pending';
+                $job->attempts = 0;
+                $job->execute_at = $nextExecuteAt;
+                $job->last_error = $error;
+                $job->locked_at = null;
+                $job->locked_by = null;
+                $job->save();
+
+                return [
+                    'status' => 'pending',
+                    'attempt' => $attempt,
+                    'next_execute_at' => $nextExecuteAt->toDateTimeString(),
+                ];
+            }
+
             $job->status = 'failed';
             $job->attempts = $attempt;
             $job->last_error = $error;
